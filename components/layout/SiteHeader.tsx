@@ -64,13 +64,13 @@ export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
             </span>
           </div>
 
-          {/* Right: theme toggle only */}
+          {/* Right: theme toggle — smaller so Oman label never clips */}
           <button
             className="theme-toggle"
             onClick={toggle}
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             aria-label="Toggle theme"
-            style={{ flexShrink: 0 }}
+            style={{ flexShrink: 0, fontSize: '0.85rem', padding: '0.2rem' }}
           >
             {theme === 'dark' ? '☀' : '🌙'}
           </button>

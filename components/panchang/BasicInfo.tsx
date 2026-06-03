@@ -78,11 +78,12 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
               wordBreak: 'break-word',
               paddingLeft: '0.6em',
               textIndent: '-0.6em',
+              display: 'flex', alignItems: 'center', gap: '0.3rem',
             }}>
-              {displayName}
               {vi && brief && (
                 <InfoDot title={displayName} brief={brief} isAuspicious={vi.isAuspicious} />
               )}
+              {displayName}
             </span>
             <span style={{
               flexShrink: 0,
@@ -164,8 +165,8 @@ export default function BasicInfo({ data }: Props) {
           Vara
         </div>
         <div className="info-value">
-          {vara.name}
           {VARAS[vara.name] && <InfoDot title={vara.name} brief={VARAS[vara.name].idealFor} isAuspicious={VARAS[vara.name].isAuspicious} />}
+          {vara.name}
         </div>
       </div>
 
@@ -204,8 +205,8 @@ export default function BasicInfo({ data }: Props) {
           Paksha
         </div>
         <div className="info-value">
-          {tithi.paksha}
           {PAKSHAS[tithi.paksha] && <InfoDot title={tithi.paksha} brief={PAKSHAS[tithi.paksha].idealFor} isAuspicious={PAKSHAS[tithi.paksha].isAuspicious} />}
+          {tithi.paksha}
         </div>
       </div>
 
