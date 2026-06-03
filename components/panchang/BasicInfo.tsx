@@ -76,9 +76,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
               color: color ?? 'var(--moonsilver)',
               letterSpacing: '0.02em',
               wordBreak: 'break-word',
-              paddingLeft: '0.6em',
-              textIndent: '-0.6em',
-              display: 'flex', alignItems: 'center', gap: '0.3rem',
+              display: 'flex', alignItems: 'center', gap: '0.35rem',
             }}>
               {vi && brief && (
                 <InfoDot title={displayName} brief={brief} isAuspicious={vi.isAuspicious} />
