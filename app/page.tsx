@@ -105,17 +105,11 @@ export default function Home() {
               <MoonPhase completion={data.tithi.completion} paksha={data.tithi.paksha} />
             </div>
 
-            <StarDivider />
             <BasicInfo data={data} />
-            <StarDivider />
             <AuspiciousTime muhurta={data.muhurta} />
-            <StarDivider />
             <InauspiciousTime muhurta={data.muhurta} />
-            <StarDivider />
             <NonOverlappingTime muhurta={data.muhurta} />
-            <StarDivider />
             <RankingTime muhurta={data.muhurta} panchangData={data} />
-            <StarDivider />
             <ResultSection muhurta={data.muhurta} />
 
             {/* Footer */}

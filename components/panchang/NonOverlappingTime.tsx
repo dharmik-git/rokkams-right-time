@@ -95,8 +95,8 @@ export default function NonOverlappingTime({ muhurta }: Props) {
             <div key={key} className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
                 <span style={{ color: 'var(--gold)', fontSize: '0.75rem' }}>◈</span>
-                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
                 {info && <InfoDot title={info.name} brief={info.idealFor ?? ''} isAuspicious={null} descriptionOnly />}
+                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
               </div>
               <div style={{ paddingLeft: '1.2rem', fontSize: '0.85rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic' }}>— Not available today</div>
             </div>
@@ -124,7 +124,6 @@ export default function NonOverlappingTime({ muhurta }: Props) {
           <div key={key} className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
               <span style={{ color: 'var(--gold)', fontSize: '0.75rem' }}>◈</span>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
               {info && (
                 <InfoDot
                   title={info.name}
@@ -133,6 +132,7 @@ export default function NonOverlappingTime({ muhurta }: Props) {
                   descriptionOnly
                 />
               )}
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
             </div>
             {clean.length === 0 ? (
               <div style={{ paddingLeft: '1.2rem', fontSize: '0.85rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic' }}>— No clean window today</div>

@@ -36,8 +36,8 @@ function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string;
     <div className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
         <span style={{ color: '#E07070', fontSize: '0.75rem' }}>✗</span>
-        <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: '#E07070', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
         {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={false} descriptionOnly />}
+        <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: '#E07070', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
       </div>
       {intervals.map((iv, i) => (
         <div key={i} className="time-range" style={{ paddingLeft: '1rem', fontWeight: 600, color: 'var(--moonsilver-dim)', wordBreak: 'keep-all' }}>
