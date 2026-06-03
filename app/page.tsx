@@ -79,32 +79,6 @@ export default function Home() {
         {data && !loading && (
           <div key={dateStr} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }} className="animate-in">
 
-            {/* Tithi hero strip */}
-            <div style={{
-              background: 'linear-gradient(135deg, var(--night-surface) 0%, var(--night-mid) 100%)',
-              border: '1px solid var(--night-border)',
-              borderRadius: '2px',
-              padding: '0.9rem 1.1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '0.75rem',
-              flexWrap: 'wrap',
-            }}>
-              <div style={{ minWidth: 0 }}>
-                <div style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.6rem, 1.8vw, 0.72rem)', color: 'var(--moonsilver-dim)', letterSpacing: '0.14em', textTransform: 'uppercase', marginBottom: '0.2rem' }}>
-                  Today&apos;s Tithi
-                </div>
-                <div style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(1rem, 4vw, 1.35rem)', fontWeight: 700, color: 'var(--gold-light)', lineHeight: 1.2 }}>
-                  {data.tithi.paksha} {data.tithi.name}
-                </div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--moonsilver-dim)', marginTop: '0.2rem' }}>
-                  {data.masaName} · {data.vara.name}
-                </div>
-              </div>
-              <MoonPhase completion={data.tithi.completion} paksha={data.tithi.paksha} />
-            </div>
-
             <BasicInfo data={data} />
             <AuspiciousTime muhurta={data.muhurta} />
             <InauspiciousTime muhurta={data.muhurta} />
