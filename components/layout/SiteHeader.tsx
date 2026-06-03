@@ -27,85 +27,93 @@ export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
       backdropFilter: 'blur(8px)',
       WebkitBackdropFilter: 'blur(8px)',
     }}>
-      {/* Top strip: title + location + theme toggle */}
+      {/* Top strip — single row: title · subtitle · toggle */}
       <div style={{ borderBottom: '1px solid var(--night-border)' }}>
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '0.5rem 1rem 0.3rem',
+          padding: '0.45rem 1rem 0.3rem',
           gap: '0.5rem',
-          flexWrap: 'wrap',
           maxWidth: 680, margin: '0 auto',
+          flexWrap: 'nowrap', overflow: 'hidden',
         }}>
-          {/* Left: app name */}
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem', minWidth: 0 }}>
+          {/* Left: app name + location */}
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem', minWidth: 0, overflow: 'hidden' }}>
             <span
               className="header-title"
               style={{
                 fontFamily: 'Cinzel, serif',
-                fontSize: 'clamp(0.78rem, 3.5vw, 1.05rem)',
+                fontSize: 'clamp(0.7rem, 3vw, 1rem)',
                 fontWeight: 700,
                 color: 'var(--gold-light)',
                 letterSpacing: '0.05em',
                 whiteSpace: 'nowrap',
+                flexShrink: 1,
               }}>
               Rokkam&apos;s Right Time
             </span>
             <span style={{
-              fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.6rem, 1.8vw, 0.75rem)',
-              color: 'var(--moonsilver-dim)', letterSpacing: '0.12em', textTransform: 'uppercase',
+              fontFamily: 'Cinzel, serif',
+              fontSize: 'clamp(0.52rem, 1.6vw, 0.68rem)',
+              color: 'var(--moonsilver-dim)',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+              whiteSpace: 'nowrap',
+              flexShrink: 1,
             }}>
               Muscat, Oman
             </span>
           </div>
 
-          {/* Right: location + theme toggle */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexShrink: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }} className="header-coords">
-              <span style={{ fontSize: '0.75rem' }}>🇴🇲</span>
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.6rem', color: 'var(--moonsilver-dim)', letterSpacing: '0.06em' }}>
-                Muscat · 23.59°N 58.38°E · UTC+4
-              </span>
-            </div>
-            <button
-              className="theme-toggle"
-              onClick={toggle}
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? '☀' : '🌙'}
-            </button>
-          </div>
+          {/* Right: theme toggle only */}
+          <button
+            className="theme-toggle"
+            onClick={toggle}
+            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-label="Toggle theme"
+            style={{ flexShrink: 0 }}
+          >
+            {theme === 'dark' ? '☀' : '🌙'}
+          </button>
         </div>
       </div>
 
-      {/* Bottom strip: select date + date nav + numerology + today */}
-      <div style={{ maxWidth: 680, margin: '0 auto', padding: '0.4rem 1rem 0.45rem' }}>
+      {/* Bottom strip — single row: SELECT/DATE · date nav · num-circle · today */}
+      <div style={{ maxWidth: 680, margin: '0 auto', padding: '0.35rem 1rem 0.4rem' }}>
         <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
-          gap: '0.6rem',
-          flexWrap: 'wrap',
+          display: 'flex', alignItems: 'center',
+          gap: '0.4rem',
+          flexWrap: 'nowrap', overflow: 'hidden',
         }}>
+          {/* Stacked SELECT / DATE label */}
           <div style={{
-            fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.55rem, 1.6vw, 0.65rem)',
-            color: 'var(--moonsilver-dim)', letterSpacing: '0.14em',
-            textTransform: 'uppercase', display: 'flex', gap: '0.3rem',
-            alignItems: 'center', opacity: 0.55, whiteSpace: 'nowrap',
-            flexShrink: 1, minWidth: 0,
+            fontFamily: 'Cinzel, serif',
+            fontSize: 'clamp(0.48rem, 1.4vw, 0.58rem)',
+            color: 'var(--moonsilver-dim)', letterSpacing: '0.12em',
+            textTransform: 'uppercase', opacity: 0.55,
+            display: 'flex', flexDirection: 'column', lineHeight: 1.25,
+            flexShrink: 0,
           }}>
-            <span>SELECT DATE</span>
+            <span>Select</span>
+            <span>Date</span>
           </div>
-          <div style={{ flex: '1 1 auto' }}>
+
+          {/* Date navigator */}
+          <div style={{ flex: '1 1 auto', minWidth: 0 }}>
             <DateNavigator dateStr={dateStr} onChange={onDateChange} />
           </div>
-          <div className="num-circle" title={`Numerology digit root of ${dateStr}`}>{numRoot}</div>
+
+          {/* Numerology circle */}
+          <div className="num-circle" title={`Numerology digit root of ${dateStr}`} style={{ flexShrink: 0 }}>{numRoot}</div>
+
+          {/* Today button — only when not on today */}
           {dateStr !== today && (
             <button
               onClick={() => onDateChange(today)}
               style={{
                 background: 'none', border: '1px solid var(--saffron)',
                 borderRadius: '2px', color: 'var(--saffron)',
-                padding: '0.22rem 0.45rem', cursor: 'pointer',
-                fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.55rem, 2vw, 0.6rem)',
+                padding: '0.2rem 0.4rem', cursor: 'pointer',
+                fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.48rem, 1.8vw, 0.58rem)',
                 letterSpacing: '0.06em', textTransform: 'uppercase',
                 whiteSpace: 'nowrap', flexShrink: 0,
               }}

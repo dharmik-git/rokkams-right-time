@@ -20,7 +20,7 @@ export default function ResultSection({ muhurta }: Props) {
   ).slice(0, 3);
 
   return (
-    <ExpandSection title="Result" accentColor="var(--gold-light)" defaultOpen={true}>
+    <ExpandSection title="Result" accentColor="var(--gold-light)" defaultOpen={false}>
       <p style={{
         fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.6rem, 1.8vw, 0.68rem)',
         color: 'var(--moonsilver-dim)', letterSpacing: '0.1em', textTransform: 'uppercase',
