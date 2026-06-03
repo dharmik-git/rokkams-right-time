@@ -1,4 +1,5 @@
 'use client';
+import { useEffect, useState } from 'react';
 import DateNavigator from '@/components/panchang/DateNavigator';
 import { useTheme } from '@/lib/useTheme';
 import { getMuscatToday } from '@/lib/formatTime';
@@ -12,7 +13,11 @@ interface Props {
 export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
   const { theme, toggle } = useTheme();
   const today = getMuscatToday();
-  const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 600);
+  }, []);
 
   return (
     <header style={{
