@@ -68,6 +68,16 @@ export default function DateNavigator({ dateStr, onChange }: Props) {
     setSelYear(y); setSelMonth(m); setSelDay(d);
   }, [dateStr]);
 
+  // Lock body scroll when picker is open
+  useEffect(() => {
+    if (pickerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [pickerOpen]);
+
   // Close on outside click
   useEffect(() => {
     if (!pickerOpen) return;

@@ -24,14 +24,40 @@ export function ScrollColumn({ items, selectedIndex, onChange, width = 80, label
     return ((idx % items.length) + items.length) % items.length;
   }
 
-  // Scroll wheel
-  function onWheel(e: React.WheelEvent) {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? 1 : -1;
-    setAnimating(true);
-    onChange(clamp(selectedIndex + delta));
-    setTimeout(() => setAnimating(false), 180);
-  }
+  const selectedIndexRef = useRef(selectedIndex);
+  selectedIndexRef.current = selectedIndex;
+  const offsetRef = useRef(offset);
+  offsetRef.current = offset;
+
+  // Attach non-passive wheel and touch listeners to block page scroll
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    function handleWheel(e: WheelEvent) {
+      e.preventDefault();
+      e.stopPropagation();
+      const delta = e.deltaY > 0 ? 1 : -1;
+      setAnimating(true);
+      onChange(clamp(selectedIndexRef.current + delta));
+      setTimeout(() => setAnimating(false), 180);
+    }
+
+    function handleTouchMove(e: TouchEvent) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!dragRef.current) return;
+      const dy = e.touches[0].clientY - dragRef.current.startY;
+      setOffset(dy);
+    }
+
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    el.addEventListener('touchmove', handleTouchMove, { passive: false });
+    return () => {
+      el.removeEventListener('wheel', handleWheel);
+      el.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [onChange]);
 
   // Mouse drag start
   function onMouseDown(e: React.MouseEvent) {
@@ -46,7 +72,7 @@ export function ScrollColumn({ items, selectedIndex, onChange, width = 80, label
   }
   function onMouseUp() {
     if (!dragRef.current) return;
-    const dy = offset;
+    const dy = offsetRef.current;
     const steps = -Math.round(dy / ITEM_H);
     if (steps !== 0) onChange(clamp(dragRef.current.startIdx + steps));
     dragRef.current = null;
@@ -58,14 +84,9 @@ export function ScrollColumn({ items, selectedIndex, onChange, width = 80, label
     dragRef.current = { startY: e.touches[0].clientY, startIdx: selectedIndex };
     setOffset(0);
   }
-  function onTouchMove(e: React.TouchEvent) {
-    if (!dragRef.current) return;
-    const dy = e.touches[0].clientY - dragRef.current.startY;
-    setOffset(dy);
-  }
   function onTouchEnd() {
     if (!dragRef.current) return;
-    const dy = offset;
+    const dy = offsetRef.current;
     const steps = -Math.round(dy / ITEM_H);
     if (steps !== 0) onChange(clamp(dragRef.current.startIdx + steps));
     dragRef.current = null;
@@ -101,10 +122,8 @@ export function ScrollColumn({ items, selectedIndex, onChange, width = 80, label
         ref={containerRef}
         className="scroll-col"
         style={{ width, height: COL_H, cursor: 'ns-resize', position: 'relative', overflow: 'hidden', userSelect: 'none' }}
-        onWheel={onWheel}
         onMouseDown={onMouseDown}
         onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
         {/* Fade overlays */}
