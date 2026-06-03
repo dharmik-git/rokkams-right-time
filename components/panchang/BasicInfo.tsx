@@ -17,8 +17,8 @@ interface Slot {
 
 function formatSlotTime(start: string | null, end: string | null): string {
   const s = start ? formatTime(start) : '00:00';
-  const e = end   ? formatTime(end)   : null;
-  return e ? `${s} – ${e}` : `${s} – end of day`;
+  const e = end   ? formatTime(end)   : '23:59';
+  return `${s} – ${e}`;
 }
 
 // A row with element timing slots listed below the header
@@ -63,19 +63,20 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
         const timing = formatSlotTime(slot.start, slot.end);
         return (
           <div key={i} style={{
-            display: 'flex', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.3rem 0.5rem',
+            display: 'flex', flexDirection: 'column', gap: '0.1rem',
             paddingLeft: '0.6rem', paddingTop: '0.25rem',
             borderLeft: `2px solid ${vi?.isAuspicious === false ? 'rgba(168,16,16,0.5)' : 'rgba(200,150,26,0.35)'}`,
             marginLeft: '0.3rem', marginTop: '0.2rem',
+            minWidth: 0,
           }}>
             {/* Name + dot — shown for multi-slot rows */}
             {slots.length > 1 && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontFamily: 'Cinzel, serif', fontSize: '0.95rem', fontWeight: 600, color: vi?.isAuspicious === false ? '#CC2020' : 'var(--moonsilver)', letterSpacing: '0.02em', minWidth: 0, wordBreak: 'break-word' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 600, color: vi?.isAuspicious === false ? '#CC2020' : 'var(--moonsilver)', letterSpacing: '0.02em', minWidth: 0, flexWrap: 'wrap' }}>
                 {displayName}
                 {vi && brief && <InfoDot title={displayName} brief={brief} isAuspicious={vi.isAuspicious} />}
               </span>
             )}
-            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--moonsilver-dim)', letterSpacing: '0.02em', whiteSpace: 'nowrap' }}>
+            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 600, color: 'var(--moonsilver-dim)', letterSpacing: '0.02em' }}>
               {timing}
             </span>
           </div>
