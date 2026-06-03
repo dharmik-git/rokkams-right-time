@@ -46,6 +46,7 @@ function serializeMuhurta(m: ReturnType<typeof computePanchang>['muhurta']) {
     pratahSandhya:   serializeInterval(m.pratahSandhya),
     sayahanaSandhya: serializeInterval(m.sayahanaSandhya),
     nishitaMuhurta:  serializeInterval(m.nishitaMuhurta),
+    madhyahnaSandhya: serializeInterval(m.madhyahnaSandhya),
     amritKalam:      m.amritKalam.map(serializeInterval),
     durMuhurta:      m.durMuhurta.map(serializeInterval),
     varjyam:         m.varjyam.map(serializeInterval),
