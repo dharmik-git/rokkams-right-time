@@ -1,0 +1,25 @@
+import type { KaranaResult } from '@/types/panchang';
+
+// 11 Karanas: 4 fixed + 7 repeating
+const FIXED_KARANAS = ['Kimstughna', 'Shakuni', 'Chatushpada', 'Naga'];
+const REPEATING_KARANAS = ['Bava', 'Balava', 'Kaulava', 'Taitula', 'Garaja', 'Vanija', 'Vishti'];
+
+// Uses tropical longitudes — ayanamsha cancels in elongation
+export function calculateKarana(sunLng: number, moonLng: number): KaranaResult {
+  let diff = moonLng - sunLng;
+  if (diff < 0) diff += 360;
+
+  const karanaIndex = Math.floor(diff / 6); // 0–59
+  const completion = (diff % 6) / 6;
+
+  let name: string;
+  if (karanaIndex === 0) {
+    name = FIXED_KARANAS[0]; // Kimstughna: first half of Shukla Pratipada
+  } else if (karanaIndex >= 57) {
+    name = FIXED_KARANAS[karanaIndex - 56]; // Shakuni, Chatushpada, Naga
+  } else {
+    name = REPEATING_KARANAS[(karanaIndex - 1) % 7];
+  }
+
+  return { index: karanaIndex, completion, name };
+}
