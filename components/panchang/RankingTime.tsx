@@ -4,74 +4,9 @@ import { createPortal } from 'react-dom';
 import ExpandSection from '@/components/ui/ExpandSection';
 import { formatTime } from '@/lib/formatTime';
 import { TITHIS, YOGAS, NAKSHATRAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
-
-interface Interval { start: string; end: string; }
+import { computeRankedSlots } from '@/lib/rankedSlots';
 
 const CLOSE_ALL = 'infodot:closeAll';
-
-const AUSPICIOUS_KEYS = ['brahmaMuhurta','abhijitMuhurta','godhuliMuhurta','amritKalam','pratahSandhya','vijayaMuhurta','madhyahnaSandhya','sayahanaSandhya','nishitaMuhurta'];
-const INAUSPICIOUS_KEYS = ['rahuKalam','gulikaKalam','varjyam','baana','yamaGanda','vidalYoga','durMuhurta','bhadra'];
-
-const KEY_TO_LABEL: Record<string, string> = {
-  brahmaMuhurta: 'Brahma Muhurta',
-  abhijitMuhurta: 'Abhijit Muhurta',
-  godhuliMuhurta: 'Godhuli Muhurta',
-  amritKalam: 'Amrit Kalam',
-  pratahSandhya: 'Pratah Sandhya',
-  vijayaMuhurta: 'Vijaya Muhurta',
-  madhyahnaSandhya: 'Madhyahna Sandhya',
-  sayahanaSandhya: 'Sayahana Sandhya',
-  nishitaMuhurta: 'Nishita Muhurta',
-};
-
-function computeRankedSlots(muhurta: Record<string, any>): Array<{ start: number; end: number; score: number; labels: string[] }> {
-  const boundaries = new Set<number>();
-  const allAus: { iv: Interval; label: string }[] = [];
-  const allBad: Interval[] = [];
-
-  for (const k of AUSPICIOUS_KEYS) {
-    const raw = muhurta[k];
-    if (raw === null) continue;
-    const arr: Interval[] = Array.isArray(raw) ? raw : [raw];
-    for (const iv of arr) {
-      allAus.push({ iv, label: KEY_TO_LABEL[k] ?? k });
-      boundaries.add(new Date(iv.start).getTime());
-      boundaries.add(new Date(iv.end).getTime());
-    }
-  }
-  for (const k of INAUSPICIOUS_KEYS) {
-    const raw = muhurta[k];
-    const arr: Interval[] = Array.isArray(raw) ? raw : [raw];
-    for (const iv of arr) { allBad.push(iv); boundaries.add(new Date(iv.start).getTime()); boundaries.add(new Date(iv.end).getTime()); }
-  }
-
-  const sorted = Array.from(boundaries).sort((a, b) => a - b);
-  const slots: Array<{ start: number; end: number; score: number; labels: string[] }> = [];
-
-  for (let i = 0; i < sorted.length - 1; i++) {
-    const s = sorted[i], e = sorted[i + 1];
-    if (e - s < 60000) continue;
-    const mid = (s + e) / 2;
-    const isBad = allBad.some(iv => new Date(iv.start).getTime() <= s && new Date(iv.end).getTime() >= e);
-    if (isBad) continue;
-    const contributing = allAus.filter(({ iv }) => new Date(iv.start).getTime() <= mid && new Date(iv.end).getTime() >= mid);
-    if (contributing.length === 0) continue;
-    slots.push({ start: s, end: e, score: contributing.length, labels: contributing.map(c => c.label) });
-  }
-
-  const merged: typeof slots = [];
-  for (const slot of slots) {
-    const prev = merged[merged.length - 1];
-    if (prev && prev.end === slot.start && prev.score === slot.score &&
-        JSON.stringify(prev.labels) === JSON.stringify(slot.labels)) {
-      prev.end = slot.end;
-    } else {
-      merged.push({ ...slot });
-    }
-  }
-
-  return merged.sort((a, b) => b.score - a.score || a.start - b.start);
-}
 
 function buildQualityBrief(data: any): string {
   const lines: string[] = [];
@@ -107,36 +42,42 @@ function rankClass(i: number) {
   return i < 3 ? `rank-${i + 1}` : 'rank-n';
 }
 
-// Inline popup trigger — used for rank badge and stars
-function PopupTrigger({ children, brief, myId, style }: {
-  children: React.ReactNode;
-  brief: string;
-  myId: React.MutableRefObject<number>;
-  style?: React.CSSProperties;
-}) {
-  const [open, setOpen] = useState(false);
-  const [pos, setPos] = useState({ top: 0, left: 0 });
+interface Props { muhurta: Record<string, any>; panchangData: any; }
+
+export default function RankingTime({ muhurta, panchangData }: Props) {
+  const ranked = computeRankedSlots(muhurta);
+  const qualityBrief = buildQualityBrief(panchangData);
+
+  // Single popup state: { kind: 'badge'|'stars', index: number }
+  const [popup, setPopup] = useState<{ kind: 'badge' | 'stars'; index: number; pos: { top: number; left: number } } | null>(null);
   const [mounted, setMounted] = useState(false);
-  const triggerRef = useRef<HTMLSpanElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setMounted(true); }, []);
 
+  // Close when another InfoDot opens
   useEffect(() => {
-    function handleCloseAll(e: Event) {
-      const ce = e as CustomEvent;
-      if (ce.detail?.except !== myId.current) setOpen(false);
-    }
+    function handleCloseAll() { setPopup(null); }
     document.addEventListener(CLOSE_ALL, handleCloseAll);
     return () => document.removeEventListener(CLOSE_ALL, handleCloseAll);
-  }, [myId]);
+  }, []);
 
-  function show(e: React.MouseEvent | React.TouchEvent) {
+  // Close on outside click
+  useEffect(() => {
+    if (!popup) return;
+    function outside(e: MouseEvent) {
+      if (popupRef.current?.contains(e.target as Node)) return;
+      setPopup(null);
+    }
+    document.addEventListener('mousedown', outside);
+    return () => document.removeEventListener('mousedown', outside);
+  }, [popup]);
+
+  function openPopup(e: React.MouseEvent, kind: 'badge' | 'stars', index: number) {
     e.stopPropagation();
-    e.preventDefault();
-    if (!triggerRef.current) return;
-    document.dispatchEvent(new CustomEvent(CLOSE_ALL, { detail: { except: myId.current } }));
-    const rect = triggerRef.current.getBoundingClientRect();
+    // Signal all InfoDots to close
+    document.dispatchEvent(new CustomEvent(CLOSE_ALL));
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const W = 268, H = 180;
     let left = rect.left;
     if (left + W > window.innerWidth - 8) left = window.innerWidth - W - 8;
@@ -144,78 +85,15 @@ function PopupTrigger({ children, brief, myId, style }: {
     let top = rect.bottom + 6;
     if (top + H > window.innerHeight - 8) top = rect.top - H - 6;
     if (top < 8) top = 8;
-    setPos({ top, left });
-    setOpen(v => !v);
+    setPopup(prev =>
+      prev?.kind === kind && prev?.index === index ? null : { kind, index, pos: { top, left } }
+    );
   }
 
-  useEffect(() => {
-    if (!open) return;
-    function outside(e: MouseEvent) {
-      const t = e.target as Node;
-      if (popupRef.current?.contains(t) || triggerRef.current?.contains(t)) return;
-      setOpen(false);
-    }
-    document.addEventListener('mousedown', outside);
-    return () => document.removeEventListener('mousedown', outside);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open || !popupRef.current || !triggerRef.current) return;
-    const r = popupRef.current.getBoundingClientRect();
-    const tr = triggerRef.current.getBoundingClientRect();
-    let { left, top } = pos;
-    if (left + r.width > window.innerWidth - 8) left = window.innerWidth - r.width - 8;
-    if (left < 8) left = 8;
-    if (top + r.height > window.innerHeight - 8) top = tr.top - r.height - 6;
-    if (top < 8) top = 8;
-    if (left !== pos.left || top !== pos.top) setPos({ top, left });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-
-  return (
-    <>
-      <span
-        ref={triggerRef}
-        onClick={show}
-        onTouchEnd={e => show(e)}
-        role="button"
-        tabIndex={0}
-        aria-label="More info"
-        onKeyDown={e => e.key === 'Enter' && show(e as any)}
-        style={{ cursor: 'pointer', ...style }}
-      >
-        {children}
-      </span>
-      {mounted && open && createPortal(
-        <div
-          ref={popupRef}
-          className="info-popup"
-          style={{ top: pos.top, left: pos.left, position: 'fixed', zIndex: 99999, width: 'auto', maxWidth: 268, minWidth: 160 }}
-          onClick={e => e.stopPropagation()}
-          onMouseDown={e => e.stopPropagation()}
-        >
-          <div style={{ fontSize: '0.82rem', color: 'var(--moonsilver)', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{brief}</div>
-        </div>,
-        document.body
-      )}
-    </>
-  );
-}
-
-interface Props { muhurta: Record<string, any>; panchangData: any; }
-
-export default function RankingTime({ muhurta, panchangData }: Props) {
-  const ranked = computeRankedSlots(muhurta);
-  const qualityBrief = buildQualityBrief(panchangData);
-  // Shared ID namespace so PopupTriggers participate in the same close-all event
-  const badgeIds = useRef(ranked.map(() => Math.random()));
-  const starIds = useRef(ranked.map(() => Math.random()));
-
-  // Regenerate IDs if ranked length changes (different date)
-  if (badgeIds.current.length !== ranked.length) {
-    badgeIds.current = ranked.map(() => Math.random());
-    starIds.current = ranked.map(() => Math.random());
-  }
+  const activeSlot = popup ? ranked[popup.index] : null;
+  const activeText = popup?.kind === 'badge'
+    ? qualityBrief
+    : activeSlot?.labels.join('\n') ?? '';
 
   return (
     <ExpandSection title="Ranking of Best Auspicious Time" accentColor="var(--gold-light)">
@@ -226,29 +104,53 @@ export default function RankingTime({ muhurta, panchangData }: Props) {
           const startIso = new Date(slot.start).toISOString();
           const endIso   = new Date(slot.end).toISOString();
           const stars = '✦'.repeat(Math.min(slot.score, 5));
-          const badgeIdRef = { current: badgeIds.current[i] };
-          const starIdRef  = { current: starIds.current[i] };
           return (
             <div key={i} className="time-chip" style={{ alignItems: 'center', gap: '0.6rem' }}>
-              {/* Rank number — clickable, shows quality brief */}
-              <PopupTrigger brief={qualityBrief} myId={badgeIdRef}>
-                <span className={`rank-badge ${rankClass(i)}`}>{i + 1}</span>
-              </PopupTrigger>
+              <span
+                className={`rank-badge ${rankClass(i)}`}
+                onClick={e => openPopup(e, 'badge', i)}
+                onTouchEnd={e => openPopup(e as any, 'badge', i)}
+                role="button"
+                tabIndex={0}
+                style={{ cursor: 'pointer' }}
+                onKeyDown={e => e.key === 'Enter' && openPopup(e as any, 'badge', i)}
+              >
+                {i + 1}
+              </span>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                   <span className="time-range">{formatTime(startIso)} — {formatTime(endIso)}</span>
-                  {/* Stars — clickable, shows which muhurtas overlap */}
-                  <PopupTrigger brief={slot.labels.join('\n')} myId={starIdRef}>
-                    <span style={{ color: 'var(--gold)', fontSize: '0.65rem', opacity: 0.7 }}>{stars}</span>
-                  </PopupTrigger>
+                  <span
+                    onClick={e => openPopup(e, 'stars', i)}
+                    onTouchEnd={e => openPopup(e as any, 'stars', i)}
+                    role="button"
+                    tabIndex={0}
+                    style={{ color: 'var(--gold)', fontSize: '0.65rem', opacity: 0.7, cursor: 'pointer' }}
+                    onKeyDown={e => e.key === 'Enter' && openPopup(e as any, 'stars', i)}
+                  >
+                    {stars}
+                  </span>
                 </div>
               </div>
             </div>
           );
         })
       )}
+
+      {mounted && popup && createPortal(
+        <div
+          ref={popupRef}
+          className="info-popup"
+          style={{ top: popup.pos.top, left: popup.pos.left, position: 'fixed', zIndex: 99999, maxWidth: 268, minWidth: 160 }}
+          onClick={e => e.stopPropagation()}
+          onMouseDown={e => e.stopPropagation()}
+        >
+          <div style={{ fontSize: '0.82rem', color: 'var(--moonsilver)', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
+            {activeText}
+          </div>
+        </div>,
+        document.body
+      )}
     </ExpandSection>
   );
 }
-
-export { computeRankedSlots, KEY_TO_LABEL, AUSPICIOUS_KEYS };

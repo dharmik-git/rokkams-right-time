@@ -1,7 +1,7 @@
 'use client';
 import ExpandSection from '@/components/ui/ExpandSection';
 import { formatTime } from '@/lib/formatTime';
-import { computeRankedSlots } from './RankingTime';
+import { computeRankedSlots } from '@/lib/rankedSlots';
 
 const BUSINESS_MUHURTAS = new Set(['abhijitMuhurta', 'vijayaMuhurta']);
 
