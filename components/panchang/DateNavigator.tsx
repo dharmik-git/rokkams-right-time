@@ -49,7 +49,7 @@ export default function DateNavigator({ dateStr, onChange }: Props) {
   const [selYear, setSelYear]   = useState(initY);
   const [selMonth, setSelMonth] = useState(initM); // 1-based
   const [selDay, setSelDay]     = useState(initD);
-  const [windowWidth, setWindowWidth] = useState<number>(0);
+  const [windowWidth, setWindowWidth] = useState<number>(390);
 
   const iconRef    = useRef<HTMLButtonElement>(null);
   const pickerRef  = useRef<HTMLDivElement>(null);
@@ -140,7 +140,7 @@ export default function DateNavigator({ dateStr, onChange }: Props) {
     if (selDay > max) setSelDay(max);
   }
 
-  const pickerWidth = Math.min(300, windowWidth - 16);
+  const pickerWidth = Math.max(200, Math.min(300, windowWidth - 16));
   const picker = (
     <div
       ref={pickerRef}
@@ -208,7 +208,7 @@ export default function DateNavigator({ dateStr, onChange }: Props) {
     </div>
   );
 
-  const isMobile = windowWidth > 0 && windowWidth <= 480;
+  const isMobile = windowWidth <= 480;
 
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', position: 'relative', flexWrap: 'nowrap' }}>
