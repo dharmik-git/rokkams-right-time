@@ -14,6 +14,7 @@ interface Props {
     amritKalam: Interval[];
     pratahSandhya: Interval;
     vijayaMuhurta: Interval;
+    madhyahnaSandhya: Interval;
     sayahanaSandhya: Interval;
     nishitaMuhurta: Interval;
   };
@@ -25,9 +26,10 @@ const ORDER = [
   { key: 'godhuliMuhurta',  label: 'Godhuli Muhurta' },
   { key: 'amritKalam',      label: 'Amrit Kalam' },
   { key: 'pratahSandhya',   label: 'Pratah Sandhya' },
-  { key: 'vijayaMuhurta',   label: 'Vijaya Muhurta' },
-  { key: 'sayahanaSandhya', label: 'Sayahana Sandhya' },
-  { key: 'nishitaMuhurta',  label: 'Nishita Muhurta' },
+  { key: 'vijayaMuhurta',    label: 'Vijaya Muhurta' },
+  { key: 'madhyahnaSandhya', label: 'Madhyahna Sandhya' },
+  { key: 'sayahanaSandhya',  label: 'Sayahana Sandhya' },
+  { key: 'nishitaMuhurta',   label: 'Nishita Muhurta' },
 ];
 
 function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: string; intervals: Interval[] }) {
@@ -37,7 +39,7 @@ function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: str
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
         <span style={{ color: '#4EC08A', fontSize: '0.75rem' }}>✦</span>
         <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-light)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
-        {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={true} />}
+        {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={true} descriptionOnly />}
       </div>
       {intervals.map((iv, i) => (
         <div key={i} className="time-range" style={{ paddingLeft: '1rem', fontWeight: 600, color: 'var(--moonsilver)', wordBreak: 'keep-all' }}>

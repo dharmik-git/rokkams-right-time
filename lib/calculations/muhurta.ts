@@ -184,6 +184,12 @@ export function calculateMuhurta(
     end: new Date(sunset.getTime() + 8 * nightMuhurtaMs2),
   };
 
+  // Madhyahna Sandhya: 24-min window centred on solar noon
+  const madhyahnaSandhya: TimeInterval = {
+    start: addMinutes(solarNoon, -12),
+    end: addMinutes(solarNoon, 12),
+  };
+
   return {
     rahuKalam,
     gulikaKalam,
@@ -198,6 +204,7 @@ export function calculateMuhurta(
     varjyam,
     sayahanaSandhya,
     nishitaMuhurta,
+    madhyahnaSandhya,
     baana,
     vidalYoga,
     bhadra,

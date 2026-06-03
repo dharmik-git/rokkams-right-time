@@ -70,6 +70,7 @@ export interface MuhurtaResult {
   varjyam: TimeInterval[];
   sayahanaSandhya: TimeInterval;
   nishitaMuhurta: TimeInterval;
+  madhyahnaSandhya: TimeInterval;
   baana: TimeInterval[];
   vidalYoga: TimeInterval[];
   bhadra: TimeInterval[];

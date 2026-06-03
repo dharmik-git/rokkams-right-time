@@ -12,9 +12,10 @@ const AUSPICIOUS_ORDER = [
   { key: 'godhuliMuhurta',  label: 'Godhuli Muhurta' },
   { key: 'amritKalam',      label: 'Amrit Kalam' },
   { key: 'pratahSandhya',   label: 'Pratah Sandhya' },
-  { key: 'vijayaMuhurta',   label: 'Vijaya Muhurta' },
-  { key: 'sayahanaSandhya', label: 'Sayahana Sandhya' },
-  { key: 'nishitaMuhurta',  label: 'Nishita Muhurta' },
+  { key: 'vijayaMuhurta',    label: 'Vijaya Muhurta' },
+  { key: 'madhyahnaSandhya', label: 'Madhyahna Sandhya' },
+  { key: 'sayahanaSandhya',  label: 'Sayahana Sandhya' },
+  { key: 'nishitaMuhurta',   label: 'Nishita Muhurta' },
 ];
 
 const INAUSPICIOUS_ORDER = [
@@ -88,7 +89,19 @@ export default function NonOverlappingTime({ muhurta }: Props) {
     <ExpandSection title="Non-Overlapped Auspicious Times" accentColor="var(--gold-light)">
       {AUSPICIOUS_ORDER.map(({ key, label }) => {
         const raw = muhurta[key];
-        if (raw === null) return null;
+        if (raw === null) {
+          const info = MUHURTA_INFO[key];
+          return (
+            <div key={key} className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
+                <span style={{ color: 'var(--gold)', fontSize: '0.75rem' }}>◈</span>
+                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
+                {info && <InfoDot title={info.name} brief={info.idealFor ?? ''} isAuspicious={null} descriptionOnly />}
+              </div>
+              <div style={{ paddingLeft: '1.2rem', fontSize: '0.85rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic' }}>— Not available today</div>
+            </div>
+          );
+        }
         const src: Interval[] = Array.isArray(raw) ? raw : [raw];
         const clean: Interval[] = src.flatMap(iv => subtractAll(iv, badIntervals));
         const info = MUHURTA_INFO[key];
@@ -117,6 +130,7 @@ export default function NonOverlappingTime({ muhurta }: Props) {
                   title={info.name}
                   brief={brief}
                   isAuspicious={uniqueOverlaps.length === 0 ? true : null}
+                  descriptionOnly
                 />
               )}
             </div>

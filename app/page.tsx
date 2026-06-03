@@ -6,6 +6,7 @@ import AuspiciousTime from '@/components/panchang/AuspiciousTime';
 import InauspiciousTime from '@/components/panchang/InauspiciousTime';
 import NonOverlappingTime from '@/components/panchang/NonOverlappingTime';
 import RankingTime from '@/components/panchang/RankingTime';
+import ResultSection from '@/components/panchang/ResultSection';
 import { getMuscatToday, digitRoot } from '@/lib/formatTime';
 
 function StarDivider() {
@@ -76,7 +77,7 @@ export default function Home() {
         )}
 
         {data && !loading && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }} className="animate-in">
+          <div key={dateStr} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }} className="animate-in">
 
             {/* Tithi hero strip */}
             <div style={{
@@ -114,14 +115,13 @@ export default function Home() {
             <NonOverlappingTime muhurta={data.muhurta} />
             <StarDivider />
             <RankingTime muhurta={data.muhurta} panchangData={data} />
+            <StarDivider />
+            <ResultSection muhurta={data.muhurta} />
 
             {/* Footer */}
             <div style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem', borderTop: '1px solid var(--night-border)', marginTop: '0.5rem' }}>
               <p style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.62rem, 1.6vw, 0.72rem)', color: 'var(--moonsilver-dim)', letterSpacing: '0.1em', textTransform: 'uppercase', lineHeight: 2 }}>
-                Muscat, Oman · UTC+4 · Lahiri Ayanamsha · 2000 BCE – 3000 CE
-              </p>
-              <p style={{ fontSize: '0.75rem', color: 'var(--moonsilver-dim)', opacity: 0.5, marginTop: '0.25rem' }}>
-                Rokkam&apos;s Right Time — Panchang for Muscat
+                Muscat, Oman · UTC+4
               </p>
             </div>
           </div>

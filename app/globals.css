@@ -171,8 +171,8 @@ h1, h2, h3 { font-family: 'Cinzel', serif; font-weight: 700; }
 
 /* ── Info dot ────────────────────────────────────────────────────────── */
 .info-dot {
-  width: 9px;
-  height: 9px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   background: var(--dot-color);
   cursor: pointer;
@@ -305,9 +305,9 @@ h1, h2, h3 { font-family: 'Cinzel', serif; font-weight: 700; }
   font-weight: 700;
   flex-shrink: 0;
 }
-.rank-1 { background: var(--gold); color: var(--night-deep); }
-.rank-2 { background: rgba(200,150,26,0.5); color: var(--gold-light); }
-.rank-3 { background: rgba(200,150,26,0.25); color: var(--gold); }
+.rank-1 { background: rgba(184,204,232,0.1); color: var(--moonsilver-dim); }
+.rank-2 { background: rgba(184,204,232,0.1); color: var(--moonsilver-dim); }
+.rank-3 { background: rgba(184,204,232,0.1); color: var(--moonsilver-dim); }
 .rank-n { background: rgba(184,204,232,0.1); color: var(--moonsilver-dim); }
 
 /* ── Quality report ──────────────────────────────────────────────────── */

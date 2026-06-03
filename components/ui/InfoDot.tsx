@@ -2,25 +2,41 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
+const CLOSE_ALL = 'infodot:closeAll';
+
 interface InfoDotProps {
   title: string;
   brief: string;
   isAuspicious?: boolean | null;
+  descriptionOnly?: boolean;
 }
 
-export default function InfoDot({ title, brief, isAuspicious }: InfoDotProps) {
+export default function InfoDot({ title, brief, isAuspicious, descriptionOnly }: InfoDotProps) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const [mounted, setMounted] = useState(false);
   const dotRef = useRef<HTMLSpanElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
+  const myId = useRef(Math.random());
 
   useEffect(() => { setMounted(true); }, []);
+
+  // Close when another popup opens
+  useEffect(() => {
+    function handleCloseAll(e: Event) {
+      const ce = e as CustomEvent;
+      if (ce.detail?.except !== myId.current) setOpen(false);
+    }
+    document.addEventListener(CLOSE_ALL, handleCloseAll);
+    return () => document.removeEventListener(CLOSE_ALL, handleCloseAll);
+  }, []);
 
   function show(e: React.MouseEvent | React.TouchEvent) {
     e.stopPropagation();
     e.preventDefault();
     if (!dotRef.current) return;
+    // Signal all other popups to close
+    document.dispatchEvent(new CustomEvent(CLOSE_ALL, { detail: { except: myId.current } }));
     const rect = dotRef.current.getBoundingClientRect();
     const W = 268;
     const H = 180;
@@ -67,8 +83,8 @@ export default function InfoDot({ title, brief, isAuspicious }: InfoDotProps) {
       onClick={e => e.stopPropagation()}
       onMouseDown={e => e.stopPropagation()}
     >
-      <div className="popup-title" style={{ marginBottom: isAuspicious != null ? '0.35rem' : '0.4rem' }}>{title}</div>
-      {isAuspicious != null && (
+      {!descriptionOnly && <div className="popup-title" style={{ marginBottom: isAuspicious != null ? '0.35rem' : '0.4rem' }}>{title}</div>}
+      {!descriptionOnly && isAuspicious != null && (
         <span className={`popup-badge ${isAuspicious ? 'auspicious' : 'inauspicious'}`} style={{ marginTop: 0, marginBottom: '0.4rem', display: 'block' }}>
           {isAuspicious ? '✦ Auspicious' : '✗ Inauspicious'}
         </span>

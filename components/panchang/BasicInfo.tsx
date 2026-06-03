@@ -21,7 +21,18 @@ function formatSlotTime(start: string | null, end: string | null): string {
   return `${s} – ${e}`;
 }
 
-// A row with element timing slots listed below the header
+function nameColor(isAuspicious: boolean | null | undefined): string | undefined {
+  if (isAuspicious === true)  return '#4EC08A';
+  if (isAuspicious === false) return '#CC2020';
+  return undefined;
+}
+
+function borderColor(isAuspicious: boolean | null | undefined): string {
+  if (isAuspicious === true)  return 'rgba(22,122,72,0.55)';
+  if (isAuspicious === false) return 'rgba(168,16,16,0.5)';
+  return 'rgba(200,150,26,0.35)';
+}
+
 function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: {
   label: string;
   labelDotKey?: string;
@@ -33,50 +44,56 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
 
   return (
     <div style={{ paddingBottom: '0.5rem', borderBottom: '1px solid rgba(128,100,50,0.1)', marginBottom: '0.1rem' }}>
-      {/* Label row */}
-      <div style={{ display: 'flex', alignItems: 'center', paddingTop: '0.35rem', gap: '0.5rem' }}>
+      {/* Label row — dot BEFORE the label text */}
+      <div style={{ display: 'flex', alignItems: 'center', paddingTop: '0.35rem', gap: '0.4rem' }}>
         <div className="info-label" style={{ minWidth: 90, flexShrink: 0 }}>
-          {label}
           {labelInfo && <InfoDot title={labelInfo.label} brief={labelInfo.brief} />}
+          {label}
         </div>
-        {/* If single slot, show name inline; if multiple, they appear below */}
-        {slots.length === 1 && (
-          <div className="info-value" style={{ flex: 1 }}>
-            <span>{slots[0].paksha ? `${slots[0].paksha} ${slots[0].name}` : slots[0].name}</span>
-            {(() => {
-              const vi = getValueInfo(slots[0].name);
-              const brief = getValueBrief(slots[0].name);
-              return vi && brief ? (
-                <InfoDot title={slots[0].paksha ? `${slots[0].paksha} ${slots[0].name}` : slots[0].name} brief={brief} isAuspicious={vi.isAuspicious} />
-              ) : null;
-            })()}
-          </div>
-        )}
-        {slots.length > 1 && <div className="info-value" style={{ flex: 1, color: 'var(--moonsilver-dim)', fontSize: '0.78rem' }}>{slots.length} today</div>}
       </div>
 
-      {/* Timing rows for each slot */}
+      {/* Name LEFT + Timing RIGHT for each slot */}
       {slots.map((slot, i) => {
         const displayName = slot.paksha ? `${slot.paksha} ${slot.name}` : slot.name;
         const vi = getValueInfo(slot.name);
         const brief = getValueBrief(slot.name);
         const timing = formatSlotTime(slot.start, slot.end);
+        const color = nameColor(vi?.isAuspicious);
         return (
           <div key={i} style={{
-            display: 'flex', flexDirection: 'column', gap: '0.1rem',
-            paddingLeft: '0.6rem', paddingTop: '0.25rem',
-            borderLeft: `2px solid ${vi?.isAuspicious === false ? 'rgba(168,16,16,0.5)' : 'rgba(200,150,26,0.35)'}`,
-            marginLeft: '0.3rem', marginTop: '0.2rem',
+            display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+            gap: '0.5rem',
+            paddingLeft: '0.6rem', paddingTop: '0.2rem',
+            borderLeft: `2px solid ${borderColor(vi?.isAuspicious)}`,
+            marginLeft: '0.3rem', marginTop: '0.15rem',
             minWidth: 0,
           }}>
-            {/* Name + dot — shown for multi-slot rows */}
-            {slots.length > 1 && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 600, color: vi?.isAuspicious === false ? '#CC2020' : 'var(--moonsilver)', letterSpacing: '0.02em', minWidth: 0, flexWrap: 'wrap' }}>
-                {displayName}
-                {vi && brief && <InfoDot title={displayName} brief={brief} isAuspicious={vi.isAuspicious} />}
-              </span>
-            )}
-            <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.88rem', fontWeight: 600, color: 'var(--moonsilver-dim)', letterSpacing: '0.02em' }}>
+            <span style={{
+              flex: 1, minWidth: 0,
+              fontFamily: 'Cinzel, serif',
+              fontSize: 'clamp(0.75rem, 2.5vw, 0.85rem)',
+              fontWeight: 600,
+              color: color ?? 'var(--moonsilver)',
+              letterSpacing: '0.02em',
+              wordBreak: 'break-word',
+              paddingLeft: '0.6em',
+              textIndent: '-0.6em',
+            }}>
+              {displayName}
+              {vi && brief && (
+                <InfoDot title={displayName} brief={brief} isAuspicious={vi.isAuspicious} />
+              )}
+            </span>
+            <span style={{
+              flexShrink: 0,
+              fontFamily: 'Cinzel, serif',
+              fontSize: 'clamp(0.7rem, 2vw, 0.78rem)',
+              fontWeight: 600,
+              color: 'var(--moonsilver-dim)',
+              letterSpacing: '0.02em',
+              whiteSpace: 'nowrap',
+              textAlign: 'right',
+            }}>
               {timing}
             </span>
           </div>
@@ -86,9 +103,9 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
   );
 }
 
-function SunMoonRow({ label, icon, value }: { label: string; icon: string; value: string }) {
+function SunMoonRow({ label, icon, value, noBorder }: { label: string; icon: string; value: string; noBorder?: boolean }) {
   return (
-    <div className="info-row">
+    <div className="info-row" style={noBorder ? { borderBottom: 'none' } : undefined}>
       <div className="info-label">{icon} {label}</div>
       <div className="info-value" style={{ fontFamily: 'Cinzel, serif', fontSize: '0.95rem', color: 'var(--gold-light)' }}>{value}</div>
     </div>
@@ -105,9 +122,8 @@ function SimpleRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function BasicInfo({ data }: Props) {
-  const { tithi, nakshatra, yoga, karana, vara, sunMoonTimes, samvat, moonSign, suryaNakshatra, suryaPada, nakshatraPada, masaName, transitions } = data;
+  const { tithi, nakshatra, yoga, karana, vara, sunMoonTimes, moonSign, suryaNakshatra, suryaPada, nakshatraPada, transitions } = data;
 
-  // Build slots from transitions (fallback to single computed value if no transitions data)
   const tithiSlots: Slot[] = transitions?.tithi?.length
     ? transitions.tithi
     : [{ name: tithi.name, paksha: tithi.paksha, start: null, end: null }];
@@ -125,17 +141,14 @@ export default function BasicInfo({ data }: Props) {
     : [{ name: karana.name, start: null, end: null }];
 
   return (
-    <ExpandSection title="Basic Info" defaultOpen={true}>
-      {/* Sun & Moon */}
-      <p className="sub-label">☀ Sun &amp; Moon</p>
-      <SunMoonRow label="Sunrise"  icon="🌅" value={formatTime(sunMoonTimes.sunrise)} />
+    <ExpandSection title="Basic Info" defaultOpen={false}>
+      {/* Sun & Moon — no heading; no border between Sunrise/Sunset pair and Moonrise/Moonset pair */}
+      <SunMoonRow label="Sunrise"  icon="🌅" value={formatTime(sunMoonTimes.sunrise)} noBorder />
       <SunMoonRow label="Sunset"   icon="🌇" value={formatTime(sunMoonTimes.sunset)} />
-      <SunMoonRow label="Moonrise" icon="🌕" value={formatTime(sunMoonTimes.moonrise) || '—'} />
+      <SunMoonRow label="Moonrise" icon="🌕" value={formatTime(sunMoonTimes.moonrise) || '—'} noBorder />
       <SunMoonRow label="Moonset"  icon="🌑" value={formatTime(sunMoonTimes.moonset) || '—'} />
 
-      {/* Five Limbs with timings */}
-      <p className="sub-label" style={{ marginTop: '1rem' }}>✦ Pancha Anga</p>
-
+      {/* Order: Tithi, Vara, Nakshatra, Yoga, Karana, Paksha */}
       <ElementRow
         label="Tithi"
         labelDotKey="tithi"
@@ -143,6 +156,19 @@ export default function BasicInfo({ data }: Props) {
         getValueInfo={name => TITHIS[name] ?? null}
         getValueBrief={name => TITHIS[name]?.idealFor}
       />
+
+      {/* Vara */}
+      <div className="info-row">
+        <div className="info-label">
+          {VARAS[vara.name] && <InfoDot title={ELEMENT_TYPES.vara.label} brief={ELEMENT_TYPES.vara.brief} />}
+          Vara
+        </div>
+        <div className="info-value">
+          {vara.name}
+          {VARAS[vara.name] && <InfoDot title={vara.name} brief={VARAS[vara.name].idealFor} isAuspicious={VARAS[vara.name].isAuspicious} />}
+        </div>
+      </div>
+
       <ElementRow
         label="Nakshatra"
         labelDotKey="nakshatra"
@@ -171,23 +197,11 @@ export default function BasicInfo({ data }: Props) {
         getValueBrief={name => KARANAS[name]?.idealFor}
       />
 
-      {/* Vara — no timing transitions (same all day) */}
-      <div className="info-row">
-        <div className="info-label">
-          Vara
-          <InfoDot title={ELEMENT_TYPES.vara.label} brief={ELEMENT_TYPES.vara.brief} />
-        </div>
-        <div className="info-value">
-          {vara.name}
-          {VARAS[vara.name] && <InfoDot title={vara.name} brief={VARAS[vara.name].idealFor} isAuspicious={VARAS[vara.name].isAuspicious} />}
-        </div>
-      </div>
-
       {/* Paksha */}
       <div className="info-row">
         <div className="info-label">
+          {PAKSHAS[tithi.paksha] && <InfoDot title={ELEMENT_TYPES.paksha.label} brief={ELEMENT_TYPES.paksha.brief} />}
           Paksha
-          <InfoDot title={ELEMENT_TYPES.paksha.label} brief={ELEMENT_TYPES.paksha.brief} />
         </div>
         <div className="info-value">
           {tithi.paksha}
@@ -195,14 +209,7 @@ export default function BasicInfo({ data }: Props) {
         </div>
       </div>
 
-      {/* Samvat */}
-      <p className="sub-label" style={{ marginTop: '1rem' }}>🗓 Samvat &amp; Calendar</p>
-      <SimpleRow label="Vikram Samvat"   value={String(samvat.vikrama)} />
-      <SimpleRow label="Shaka Samvat"    value={String(samvat.shaka)} />
-      <SimpleRow label="Gujarati Samvat" value={String(samvat.gujarati)} />
-      <SimpleRow label="Chandra Masa"    value={masaName} />
-
-      {/* Rashi */}
+      {/* Rashi & Nakshatra */}
       <p className="sub-label" style={{ marginTop: '1rem' }}>☽ Rashi &amp; Nakshatra</p>
       <SimpleRow label="Moon Sign"       value={moonSign} />
       <SimpleRow label="Surya Nakshatra" value={suryaNakshatra} />

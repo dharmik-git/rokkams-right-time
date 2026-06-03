@@ -245,23 +245,6 @@ export default function DateNavigator({ dateStr, onChange }: Props) {
       {/* Next day */}
       <button onClick={() => onChange(stepDate(dateStr, 1))} aria-label="Next day" style={{ ...btnStyle, padding: '0.25rem 0.4rem', fontSize: '1.1rem' }}>›</button>
 
-      {/* Today — show icon on mobile, text on desktop */}
-      {dateStr !== today && (
-        <button
-          onClick={() => onChange(today)}
-          style={{
-            background: 'none', border: '1px solid var(--saffron)',
-            borderRadius: '2px', color: 'var(--saffron)',
-            padding: '0.22rem 0.45rem', cursor: 'pointer',
-            fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.55rem, 2vw, 0.6rem)',
-            letterSpacing: '0.06em', textTransform: 'uppercase',
-            whiteSpace: 'nowrap', flexShrink: 0,
-          }}
-        >
-          {isMobile ? '↺' : 'Today'}
-        </button>
-      )}
-
       {/* Drum-roll picker portal */}
       {mounted && pickerOpen && createPortal(picker, document.body)}
     </div>

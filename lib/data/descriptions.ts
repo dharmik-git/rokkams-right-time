@@ -9,34 +9,34 @@ export interface ElementInfo {
 
 export const ELEMENT_TYPES: Record<string, { label: string; description: string; brief: string }> = {
   tithi: {
-    label: 'Tithi',
+    label: 'Tithi (Lunar Day)',
     description: 'Tithi is the lunar day — one of the five essential Panchang limbs.',
-    brief: 'Lunar day — determines auspiciousness for ceremonies and activities',
+    brief: 'determines auspiciousness for ceremonies and activities',
   },
   nakshatra: {
-    label: 'Nakshatra',
+    label: 'Nakshatra (Lunar Mansion)',
     description: 'Nakshatra is the lunar mansion occupied by the Moon.',
-    brief: 'Lunar mansion — influences the quality and outcome of events',
+    brief: 'influences the quality and outcome of events',
   },
   yoga: {
-    label: 'Yoga',
+    label: 'Yoga (Sun-Moon Combination)',
     description: 'Yoga is the Sun-Moon longitudinal combination, indicating day quality.',
-    brief: 'Sun-Moon combination — affects the overall quality of the day',
+    brief: 'affects the overall quality of the day',
   },
   karana: {
-    label: 'Karana',
+    label: 'Karana (Half-Day Period)',
     description: 'Karana is half a Tithi — each lunar day is split into two Karanas.',
-    brief: 'Half-day period — shapes success of activities begun within it',
+    brief: 'shapes success of activities begun within it',
   },
   vara: {
     label: 'Vara (Weekday)',
     description: 'Vara is the weekday, each ruled by a planet imparting specific qualities.',
-    brief: 'Weekday ruled by a planet — influences all activities of the day',
+    brief: 'influences all activities of the day',
   },
   paksha: {
-    label: 'Paksha',
+    label: 'Paksha (Lunar Fortnight)',
     description: 'Paksha is the lunar fortnight — Shukla (waxing) or Krishna (waning).',
-    brief: 'Lunar fortnight — waxing favors beginnings, waning favors completion',
+    brief: 'waxing favors beginnings, waning favors completion',
   },
 };
 
@@ -415,6 +415,13 @@ export const MUHURTA_INFO: Record<string, { name: string; description: string; h
     howToUse: 'Deep meditation, Shiva worship, and advanced spiritual practices.',
     isAuspicious: true,
     idealFor: 'Deep meditation, Shiva worship, spiritual practices',
+  },
+  madhyahnaSandhya: {
+    name: 'Madhyahna Sandhya',
+    description: 'The Midday Sandhya — sacred junction at solar noon, 24 min centred on the sun\'s peak.',
+    howToUse: 'Traditional time for midday prayer, Sandhyavandana, and brief reflection.',
+    isAuspicious: true,
+    idealFor: 'Midday prayer, Sandhyavandana, reflection',
   },
   rahuKalam: {
     name: 'Rahu Kalam',

@@ -1,6 +1,7 @@
 'use client';
 import DateNavigator from '@/components/panchang/DateNavigator';
 import { useTheme } from '@/lib/useTheme';
+import { getMuscatToday } from '@/lib/formatTime';
 
 interface Props {
   dateStr: string;
@@ -10,6 +11,8 @@ interface Props {
 
 export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
   const { theme, toggle } = useTheme();
+  const today = getMuscatToday();
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 600;
 
   return (
     <header style={{
@@ -36,9 +39,7 @@ export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
                 fontFamily: 'Cinzel, serif',
                 fontSize: 'clamp(0.78rem, 3.5vw, 1.05rem)',
                 fontWeight: 700,
-                background: 'linear-gradient(90deg, var(--gold-light), var(--saffron))',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: 'var(--gold-light)',
                 letterSpacing: '0.05em',
                 whiteSpace: 'nowrap',
               }}>
@@ -48,7 +49,7 @@ export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
               fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.6rem, 1.8vw, 0.75rem)',
               color: 'var(--moonsilver-dim)', letterSpacing: '0.12em', textTransform: 'uppercase',
             }}>
-              Panchang
+              Muscat, Oman
             </span>
           </div>
 
@@ -72,7 +73,7 @@ export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
         </div>
       </div>
 
-      {/* Bottom strip: select date + date nav + numerology */}
+      {/* Bottom strip: select date + date nav + numerology + today */}
       <div style={{ maxWidth: 680, margin: '0 auto', padding: '0.4rem 1rem 0.45rem' }}>
         <div style={{
           display: 'flex', alignItems: 'center', justifyContent: 'flex-start',
@@ -86,14 +87,27 @@ export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
             alignItems: 'center', opacity: 0.55, whiteSpace: 'nowrap',
             flexShrink: 1, minWidth: 0,
           }}>
-            <span>కడ ఎంచుకోండి</span>
-            <span style={{ opacity: 0.5 }}>/</span>
             <span>SELECT DATE</span>
           </div>
           <div style={{ flex: '1 1 auto' }}>
             <DateNavigator dateStr={dateStr} onChange={onDateChange} />
           </div>
           <div className="num-circle" title={`Numerology digit root of ${dateStr}`}>{numRoot}</div>
+          {dateStr !== today && (
+            <button
+              onClick={() => onDateChange(today)}
+              style={{
+                background: 'none', border: '1px solid var(--saffron)',
+                borderRadius: '2px', color: 'var(--saffron)',
+                padding: '0.22rem 0.45rem', cursor: 'pointer',
+                fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.55rem, 2vw, 0.6rem)',
+                letterSpacing: '0.06em', textTransform: 'uppercase',
+                whiteSpace: 'nowrap', flexShrink: 0,
+              }}
+            >
+              {isMobile ? '↺' : 'Today'}
+            </button>
+          )}
         </div>
       </div>
     </header>
