@@ -92,12 +92,10 @@ export default function NonOverlappingTime({ muhurta }: Props) {
         if (raw === null) {
           const info = MUHURTA_INFO[key];
           return (
-            <div key={key} className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
-                {info && <InfoDot title={info.name} brief={info.idealFor ?? ''} isAuspicious={null} descriptionOnly />}
-                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
-              </div>
-              <div style={{ paddingLeft: '1.2rem', fontSize: '0.85rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic' }}>— Not available today</div>
+            <div key={key} className="time-chip" style={{ alignItems: 'center', gap: '0.4rem' }}>
+              {info && <InfoDot title={info.name} brief={info.idealFor ?? ''} isAuspicious={null} descriptionOnly />}
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1, minWidth: 0, wordBreak: 'break-word', paddingLeft: '0.6em', textIndent: '-0.6em' }}>{label}</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic', flexShrink: 0 }}>Not available today</span>
             </div>
           );
         }
@@ -120,27 +118,35 @@ export default function NonOverlappingTime({ muhurta }: Props) {
         }
 
         return (
-          <div key={key} className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
-              {info && (
-                <InfoDot
-                  title={info.name}
-                  brief={brief}
-                  isAuspicious={uniqueOverlaps.length === 0 ? true : null}
-                  descriptionOnly
-                />
-              )}
-              <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
-            </div>
-            {clean.length === 0 ? (
-              <div style={{ paddingLeft: '1.2rem', fontSize: '0.85rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic' }}>— No clean window today</div>
-            ) : (
-              clean.map((iv, i) => (
-                <div key={i} className="time-range" style={{ paddingLeft: '1rem', fontWeight: 600, color: 'var(--moonsilver)', wordBreak: 'keep-all' }}>
-                  {formatTime(iv.start)} — {formatTime(iv.end)}
-                </div>
-              ))
+          <div key={key} className="time-chip" style={{ alignItems: 'flex-start', gap: '0.4rem' }}>
+            {info && (
+              <InfoDot
+                title={info.name}
+                brief={brief}
+                isAuspicious={uniqueOverlaps.length === 0 ? true : null}
+                descriptionOnly
+              />
             )}
+            <span style={{
+              fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)',
+              fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em',
+              flex: 1, minWidth: 0, wordBreak: 'break-word',
+              paddingLeft: '0.6em', textIndent: '-0.6em',
+            }}>{label}</span>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
+              {clean.length === 0 ? (
+                <span style={{ fontSize: '0.82rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic' }}>No clean window today</span>
+              ) : (
+                clean.map((iv, i) => (
+                  <span key={i} style={{
+                    fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
+                    fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
+                  }}>
+                    {formatTime(iv.start)} — {formatTime(iv.end)}
+                  </span>
+                ))
+              )}
+            </div>
           </div>
         );
       })}

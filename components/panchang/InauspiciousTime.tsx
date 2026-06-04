@@ -33,16 +33,24 @@ const ORDER = [
 function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string; intervals: Interval[] }) {
   const info = MUHURTA_INFO[infoKey];
   return (
-    <div className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
-        {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={false} descriptionOnly />}
-        <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: '#E07070', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
+    <div className="time-chip" style={{ alignItems: 'flex-start', gap: '0.4rem' }}>
+      {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={false} descriptionOnly />}
+      <span style={{
+        fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)',
+        fontWeight: 600, color: '#E07070', letterSpacing: '0.04em',
+        flex: 1, minWidth: 0, wordBreak: 'break-word',
+        paddingLeft: '0.6em', textIndent: '-0.6em',
+      }}>{label}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
+        {intervals.map((iv, i) => (
+          <span key={i} style={{
+            fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
+            fontWeight: 600, color: 'var(--moonsilver-dim)', whiteSpace: 'nowrap',
+          }}>
+            {formatTime(iv.start)} — {formatTime(iv.end)}
+          </span>
+        ))}
       </div>
-      {intervals.map((iv, i) => (
-        <div key={i} className="time-range" style={{ paddingLeft: '1rem', fontWeight: 600, color: 'var(--moonsilver-dim)', wordBreak: 'keep-all' }}>
-          {formatTime(iv.start)} — {formatTime(iv.end)}
-        </div>
-      ))}
     </div>
   );
 }

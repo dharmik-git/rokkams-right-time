@@ -35,16 +35,24 @@ const ORDER = [
 function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: string; intervals: Interval[] }) {
   const info = MUHURTA_INFO[infoKey];
   return (
-    <div className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', width: '100%' }}>
-        {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={true} descriptionOnly />}
-        <span style={{ fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 600, color: 'var(--gold-light)', letterSpacing: '0.04em', flex: 1 }}>{label}</span>
+    <div className="time-chip" style={{ alignItems: 'flex-start', gap: '0.4rem' }}>
+      {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={true} descriptionOnly />}
+      <span style={{
+        fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)',
+        fontWeight: 600, color: 'var(--gold-light)', letterSpacing: '0.04em',
+        flex: 1, minWidth: 0, wordBreak: 'break-word',
+        paddingLeft: '0.6em', textIndent: '-0.6em',
+      }}>{label}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', flexShrink: 0 }}>
+        {intervals.map((iv, i) => (
+          <span key={i} style={{
+            fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
+            fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
+          }}>
+            {formatTime(iv.start)} — {formatTime(iv.end)}
+          </span>
+        ))}
       </div>
-      {intervals.map((iv, i) => (
-        <div key={i} className="time-range" style={{ paddingLeft: '1rem', fontWeight: 600, color: 'var(--moonsilver)', wordBreak: 'keep-all' }}>
-          {formatTime(iv.start)} — {formatTime(iv.end)}
-        </div>
-      ))}
     </div>
   );
 }
@@ -57,12 +65,9 @@ export default function AuspiciousTime({ muhurta }: Props) {
         if (raw === null) {
           // e.g. Abhijit on Wednesday
           return (
-            <div key={key} className="time-chip" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.2rem', opacity: 0.4 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <span style={{ color: 'var(--moonsilver-dim)', fontSize: '0.75rem' }}>—</span>
-                <span style={{ fontFamily: 'Cinzel, serif', fontSize: '0.78rem', color: 'var(--moonsilver-dim)', letterSpacing: '0.04em' }}>{label}</span>
-              </div>
-              <div style={{ paddingLeft: '1.2rem', fontSize: '0.82rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic' }}>Not observed today</div>
+            <div key={key} className="time-chip" style={{ alignItems: 'center', gap: '0.4rem', opacity: 0.4 }}>
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)', fontWeight: 600, color: 'var(--moonsilver-dim)', letterSpacing: '0.04em', flex: 1, minWidth: 0 }}>{label}</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic', flexShrink: 0 }}>Not observed today</span>
             </div>
           );
         }
