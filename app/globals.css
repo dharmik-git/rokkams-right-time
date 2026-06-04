@@ -20,11 +20,12 @@
   --moonsilver-dim: #D8E8FF;
   --moonsilver-faint: rgba(216, 232, 255, 0.08);
 
-  --auspicious:     #167A48;
-  --auspicious-bg:  rgba(22, 122, 72, 0.18);
-  --inauspicious:   #A81010;
-  --inauspicious-bg: rgba(168, 16, 16, 0.18);
-  --auspicious-text: #3DD68C;
+  --auspicious:       #167A48;
+  --auspicious-bg:    rgba(22, 122, 72, 0.18);
+  --inauspicious:     #A81010;
+  --inauspicious-bg:  rgba(168, 16, 16, 0.18);
+  --auspicious-text:  #3DD68C;
+  --inauspicious-text: #E07070;
 
   --dot-color:      #FFE135;
   --dot-hover:      #FFF066;
@@ -50,11 +51,12 @@
   --moonsilver-dim:  #301E08;
   --moonsilver-faint: rgba(14, 8, 0, 0.06);
 
-  --auspicious:      #083D20;
-  --auspicious-bg:   rgba(8, 61, 32, 0.14);
-  --inauspicious:    #580000;
-  --inauspicious-bg: rgba(88, 0, 0, 0.14);
-  --auspicious-text: #1E8A4C;
+  --auspicious:        #083D20;
+  --auspicious-bg:     rgba(8, 61, 32, 0.14);
+  --inauspicious:      #580000;
+  --inauspicious-bg:   rgba(88, 0, 0, 0.14);
+  --auspicious-text:   #1E8A4C;
+  --inauspicious-text: #CC2020;
 
   --dot-color:       #9A7055;
   --dot-hover:       #B08060;

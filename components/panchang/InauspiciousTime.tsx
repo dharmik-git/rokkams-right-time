@@ -37,7 +37,7 @@ function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string;
       {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={false} descriptionOnly />}
       <span style={{
         fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)',
-        fontWeight: 600, color: '#E07070', letterSpacing: '0.04em',
+        fontWeight: 600, color: 'var(--inauspicious-text)', letterSpacing: '0.04em',
         flex: 1, minWidth: 0, wordBreak: 'break-word',
         paddingLeft: '0.6em', textIndent: '-0.6em',
       }}>{label}</span>
@@ -57,7 +57,7 @@ function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string;
 
 export default function InauspiciousTime({ muhurta }: Props) {
   return (
-    <ExpandSection title="Inauspicious Time" accentColor="#E07070">
+    <ExpandSection title="Inauspicious Time" accentColor="var(--inauspicious-text)">
       {ORDER.map(({ key, label }) => {
         const raw = (muhurta as any)[key];
         const intervals: Interval[] = Array.isArray(raw) ? raw : [raw];

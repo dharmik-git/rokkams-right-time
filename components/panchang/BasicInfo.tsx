@@ -23,7 +23,7 @@ function formatSlotTime(start: string | null, end: string | null): string {
 
 function nameColor(isAuspicious: boolean | null | undefined): string | undefined {
   if (isAuspicious === true)  return 'var(--auspicious-text)';
-  if (isAuspicious === false) return '#CC2020';
+  if (isAuspicious === false) return 'var(--inauspicious-text)';
   return undefined;
 }
 
@@ -102,10 +102,10 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
   );
 }
 
-function SunMoonRow({ label, icon, value, noBorder }: { label: string; icon: string; value: string; noBorder?: boolean }) {
+function SunMoonRow({ label, value, noBorder }: { label: string; value: string; noBorder?: boolean }) {
   return (
     <div className="info-row" style={noBorder ? { borderBottom: 'none' } : undefined}>
-      <div className="info-label">{icon} {label}</div>
+      <div className="info-label">{label}</div>
       <div className="info-value" style={{ fontFamily: 'Cinzel, serif', fontSize: '0.95rem', color: 'var(--gold-light)' }}>{value}</div>
     </div>
   );
@@ -142,10 +142,10 @@ export default function BasicInfo({ data }: Props) {
   return (
     <ExpandSection title="Basic Info" defaultOpen={false}>
       {/* Sun & Moon — no heading; no border between Sunrise/Sunset pair and Moonrise/Moonset pair */}
-      <SunMoonRow label="Sunrise"  icon="🌅" value={formatTime(sunMoonTimes.sunrise)} noBorder />
-      <SunMoonRow label="Sunset"   icon="🌇" value={formatTime(sunMoonTimes.sunset)} />
-      <SunMoonRow label="Moonrise" icon="🌕" value={formatTime(sunMoonTimes.moonrise) || '—'} noBorder />
-      <SunMoonRow label="Moonset"  icon="🌑" value={formatTime(sunMoonTimes.moonset) || '—'} />
+      <SunMoonRow label="Sunrise"  value={formatTime(sunMoonTimes.sunrise)} noBorder />
+      <SunMoonRow label="Sunset"   value={formatTime(sunMoonTimes.sunset)} />
+      <SunMoonRow label="Moonrise" value={formatTime(sunMoonTimes.moonrise) || '—'} noBorder />
+      <SunMoonRow label="Moonset"  value={formatTime(sunMoonTimes.moonset) || '—'} />
 
       {/* Order: Tithi, Vara, Nakshatra, Yoga, Karana, Paksha */}
       <ElementRow
