@@ -139,6 +139,10 @@ export default function BasicInfo({ data }: Props) {
     ? transitions.karana
     : [{ name: karana.name, start: null, end: null }];
 
+  // Vara and Paksha are always full-day (null start/end → 00:00–23:59)
+  const varaSlots: Slot[] = [{ name: vara.name, start: null, end: null }];
+  const pakshaSlots: Slot[] = [{ name: tithi.paksha, start: null, end: null }];
+
   return (
     <ExpandSection title="Basic Info" defaultOpen={false}>
       {/* Sun & Moon — no heading; no border between Sunrise/Sunset pair and Moonrise/Moonset pair */}
@@ -156,17 +160,13 @@ export default function BasicInfo({ data }: Props) {
         getValueBrief={name => TITHIS[name]?.idealFor}
       />
 
-      {/* Vara */}
-      <div className="info-row">
-        <div className="info-label">
-          {VARAS[vara.name] && <InfoDot title={ELEMENT_TYPES.vara.label} brief={ELEMENT_TYPES.vara.brief} large />}
-          Vara
-        </div>
-        <div className="info-value">
-          {VARAS[vara.name] && <InfoDot title={vara.name} brief={VARAS[vara.name].idealFor} isAuspicious={VARAS[vara.name].isAuspicious} />}
-          {vara.name}
-        </div>
-      </div>
+      <ElementRow
+        label="Vara"
+        labelDotKey="vara"
+        slots={varaSlots}
+        getValueInfo={name => VARAS[name] ?? null}
+        getValueBrief={name => VARAS[name]?.idealFor}
+      />
 
       <ElementRow
         label="Nakshatra"
@@ -196,17 +196,13 @@ export default function BasicInfo({ data }: Props) {
         getValueBrief={name => KARANAS[name]?.idealFor}
       />
 
-      {/* Paksha */}
-      <div className="info-row">
-        <div className="info-label">
-          {PAKSHAS[tithi.paksha] && <InfoDot title={ELEMENT_TYPES.paksha.label} brief={ELEMENT_TYPES.paksha.brief} large />}
-          Paksha
-        </div>
-        <div className="info-value">
-          {PAKSHAS[tithi.paksha] && <InfoDot title={tithi.paksha} brief={PAKSHAS[tithi.paksha].idealFor} isAuspicious={PAKSHAS[tithi.paksha].isAuspicious} />}
-          {tithi.paksha}
-        </div>
-      </div>
+      <ElementRow
+        label="Paksha"
+        labelDotKey="paksha"
+        slots={pakshaSlots}
+        getValueInfo={name => PAKSHAS[name] ?? null}
+        getValueBrief={name => PAKSHAS[name]?.idealFor}
+      />
 
       {/* Rashi & Nakshatra */}
       <p className="sub-label" style={{ marginTop: '1rem' }}>☽ Rashi &amp; Nakshatra</p>
