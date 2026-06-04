@@ -125,7 +125,7 @@ export default function RankingTime({ muhurta, panchangData }: Props) {
                     onTouchEnd={e => openPopup(e as any, 'stars', i)}
                     role="button"
                     tabIndex={0}
-                    style={{ color: 'var(--gold)', fontSize: '0.65rem', opacity: 0.7, cursor: 'pointer' }}
+                    style={{ color: 'var(--gold-light)', fontSize: '0.65rem', cursor: 'pointer' }}
                     onKeyDown={e => e.key === 'Enter' && openPopup(e as any, 'stars', i)}
                   >
                     {stars}
