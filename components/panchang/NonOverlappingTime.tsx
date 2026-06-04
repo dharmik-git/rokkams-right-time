@@ -123,7 +123,7 @@ export default function NonOverlappingTime({ muhurta }: Props) {
               <InfoDot
                 title={info.name}
                 brief={brief}
-                isAuspicious={uniqueOverlaps.length === 0 ? true : null}
+                isAuspicious={null}
               />
             )}
             <span style={{

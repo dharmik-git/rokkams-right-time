@@ -36,7 +36,7 @@ function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: str
   const info = MUHURTA_INFO[infoKey];
   return (
     <div className="time-chip" style={{ alignItems: 'center', gap: '0.4rem' }}>
-      {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={true} />}
+      {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={null} />}
       <span style={{
         fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)',
         fontWeight: 600, color: 'var(--gold-light)', letterSpacing: '0.04em',
