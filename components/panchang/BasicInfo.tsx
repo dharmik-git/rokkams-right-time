@@ -29,7 +29,7 @@ function nameColor(isAuspicious: boolean | null | undefined): string | undefined
 
 function borderColor(isAuspicious: boolean | null | undefined): string {
   if (isAuspicious === true)  return 'rgba(61,214,140,0.45)';
-  if (isAuspicious === false) return 'rgba(168,16,16,0.5)';
+  if (isAuspicious === false) return 'var(--inauspicious-text)';
   return 'rgba(200,150,26,0.35)';
 }
 
