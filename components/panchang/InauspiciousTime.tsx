@@ -34,7 +34,7 @@ function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string;
   const info = MUHURTA_INFO[infoKey];
   return (
     <div className="time-chip" style={{ alignItems: 'center', gap: '0.4rem' }}>
-      {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={false} descriptionOnly />}
+      {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={false} />}
       <span style={{
         fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)',
         fontWeight: 600, color: 'var(--gold-light)', letterSpacing: '0.04em',

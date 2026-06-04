@@ -93,7 +93,7 @@ export default function NonOverlappingTime({ muhurta }: Props) {
           const info = MUHURTA_INFO[key];
           return (
             <div key={key} className="time-chip" style={{ alignItems: 'center', gap: '0.4rem', flexWrap: 'nowrap' }}>
-              {info && <InfoDot title={info.name} brief={info.idealFor ?? ''} isAuspicious={null} descriptionOnly />}
+              {info && <InfoDot title={info.name} brief={info.idealFor ?? ''} isAuspicious={null} />}
               <span style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)', fontWeight: 600, color: 'var(--gold)', letterSpacing: '0.04em', flex: 1, minWidth: 0, wordBreak: 'break-word', paddingLeft: '0.6em', textIndent: '-0.6em' }}>{label}</span>
               <span style={{ fontSize: '0.78rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic', flexShrink: 0 }}>Not available today</span>
             </div>
@@ -124,7 +124,6 @@ export default function NonOverlappingTime({ muhurta }: Props) {
                 title={info.name}
                 brief={brief}
                 isAuspicious={uniqueOverlaps.length === 0 ? true : null}
-                descriptionOnly
               />
             )}
             <span style={{
