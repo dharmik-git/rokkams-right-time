@@ -84,7 +84,12 @@ export default function Home() {
             <InauspiciousTime muhurta={data.muhurta} />
             <NonOverlappingTime muhurta={data.muhurta} />
             <RankingTime muhurta={data.muhurta} panchangData={data} />
-            <ResultSection muhurta={data.muhurta} />
+            <ResultSection
+                muhurta={data.muhurta}
+                transitions={data.transitions}
+                vara={data.vara}
+                paksha={data.paksha}
+              />
 
             {/* Footer */}
             <div style={{ textAlign: 'center', padding: '1.5rem 0 0.5rem', borderTop: '1px solid var(--night-border)', marginTop: '0.5rem' }}>
