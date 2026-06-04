@@ -37,7 +37,7 @@ function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string;
       {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={false} descriptionOnly />}
       <span style={{
         fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)',
-        fontWeight: 600, color: 'var(--inauspicious-text)', letterSpacing: '0.04em',
+        fontWeight: 600, color: 'var(--gold-light)', letterSpacing: '0.04em',
         flex: 1, minWidth: 0, wordBreak: 'break-word',
         paddingLeft: '0.6em', textIndent: '-0.6em',
       }}>{label}</span>
@@ -45,7 +45,7 @@ function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string;
         {intervals.map((iv, i) => (
           <span key={i} style={{
             fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
-            fontWeight: 600, color: 'var(--moonsilver-dim)', whiteSpace: 'nowrap',
+            fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
           }}>
             {formatTime(iv.start)} — {formatTime(iv.end)}
           </span>
