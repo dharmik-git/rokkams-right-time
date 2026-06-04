@@ -2,11 +2,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ExpandSection from '@/components/ui/ExpandSection';
+import InfoDot from '@/components/ui/InfoDot';
 import { formatTime } from '@/lib/formatTime';
 import { computeBusinessSlots, type BusinessSlot } from '@/lib/businessMuhurta';
 import type { DayTransitions } from '@/lib/calculations/transitions';
 
 const CLOSE_ALL = 'infodot:closeAll';
+
+const STAR_LEGEND =
+  '⭐⭐⭐⭐⭐  Excellent   (95+)\n' +
+  '⭐⭐⭐⭐½  Very Good  (85–94)\n' +
+  '⭐⭐⭐⭐     Good        (75–84)\n' +
+  '⭐⭐⭐        Average    (65–74)\n' +
+  '⭐⭐           Below Avg (50–64)\n' +
+  '⭐              Poor        (<50)';
 
 interface Props {
   muhurta: Record<string, any>;
@@ -15,27 +24,67 @@ interface Props {
   paksha: 'Shukla' | 'Krishna';
 }
 
-function elementStars(score: number): string {
-  if (score >= 95) return '⭐⭐⭐⭐⭐';
-  if (score >= 85) return '⭐⭐⭐⭐½';
-  if (score >= 75) return '⭐⭐⭐⭐';
-  if (score >= 65) return '⭐⭐⭐';
-  if (score >= 50) return '⭐⭐';
-  return '⭐';
+// ── Half-star SVG ─────────────────────────────────────────────────────────────
+// Standard 5-point star path, clipped so left half is gold-filled and
+// right half shows only the outline — matching the half-star image.
+function HalfStar() {
+  const id = 'hs-clip';
+  // Star path centred at 12,12 in a 24×24 viewBox
+  const path = 'M12 2l2.55 7.85H22l-6.27 4.56 2.39 7.37L12 17.27l-6.12 4.51 2.39-7.37L2 9.85h7.45z';
+  return (
+    <svg
+      width="1em" height="1em" viewBox="0 0 24 24"
+      style={{ display: 'inline-block', verticalAlign: '-0.15em', filter: 'brightness(0.7)' }}
+      aria-hidden
+    >
+      <defs>
+        <clipPath id={id}>
+          <rect x="0" y="0" width="12" height="24" />
+        </clipPath>
+      </defs>
+      {/* Outline star (full) */}
+      <path d={path} fill="none" stroke="#f5c518" strokeWidth="1.5" strokeLinejoin="round" />
+      {/* Filled left half */}
+      <path d={path} fill="#f5c518" clipPath={`url(#${id})`} />
+    </svg>
+  );
+}
+
+// ── Star display ──────────────────────────────────────────────────────────────
+function StarDisplay({ count }: { count: number }) {
+  const full = Math.floor(count);
+  const half = count % 1 >= 0.5;
+  return (
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '1px', fontSize: '0.65em' }}>
+      {'⭐'.repeat(full)}
+      {half && <HalfStar />}
+    </span>
+  );
+}
+
+// ── Per-element stars in popup ────────────────────────────────────────────────
+function elementStarCount(score: number): number {
+  if (score >= 95) return 5;
+  if (score >= 85) return 4.5;
+  if (score >= 75) return 4;
+  if (score >= 65) return 3;
+  if (score >= 50) return 2;
+  return 1;
 }
 
 function rankClass(i: number) {
   return i < 3 ? `rank-${i + 1}` : 'rank-n';
 }
 
+// ── Popup content ─────────────────────────────────────────────────────────────
 function PopupContent({ slot }: { slot: BusinessSlot }) {
-  const rows: { label: string; value: string; stars: string }[] = [
-    { label: 'Tithi',     value: slot.tithiName,      stars: elementStars(slot.tithiScore) },
-    { label: 'Vara',      value: slot.varaName,        stars: elementStars(slot.varaScore) },
-    { label: 'Nakshatra', value: slot.nakshatraName,   stars: elementStars(slot.nakshatraScore) },
-    { label: 'Yoga',      value: slot.yogaName,        stars: elementStars(slot.yogaScore) },
-    { label: 'Karana',    value: slot.karanaName,      stars: elementStars(slot.karanaScore) },
-    { label: 'Paksha',    value: slot.paksha,          stars: elementStars(slot.pakshaScore) },
+  const rows: { label: string; value: string; score: number }[] = [
+    { label: 'Tithi',     value: slot.tithiName,     score: slot.tithiScore },
+    { label: 'Vara',      value: slot.varaName,       score: slot.varaScore },
+    { label: 'Nakshatra', value: slot.nakshatraName,  score: slot.nakshatraScore },
+    { label: 'Yoga',      value: slot.yogaName,       score: slot.yogaScore },
+    { label: 'Karana',    value: slot.karanaName,     score: slot.karanaScore },
+    { label: 'Paksha',    value: slot.paksha,         score: slot.pakshaScore },
   ];
 
   return (
@@ -46,7 +95,7 @@ function PopupContent({ slot }: { slot: BusinessSlot }) {
             {r.label}
           </span>
           <span style={{ color: 'var(--moonsilver)', flex: 1 }}>{r.value}</span>
-          <span style={{ fontSize: '0.6rem', filter: 'brightness(0.7)' }}>{r.stars}</span>
+          <StarDisplay count={elementStarCount(r.score)} />
         </div>
       ))}
 
@@ -56,12 +105,13 @@ function PopupContent({ slot }: { slot: BusinessSlot }) {
         <span style={{ color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700 }}>
           {slot.finalScore.toFixed(1)}
         </span>
-        <span style={{ fontSize: '0.65rem', filter: 'brightness(0.7)' }}>{slot.starRating}</span>
+        <StarDisplay count={slot.starCount} />
       </div>
     </div>
   );
 }
 
+// ── Main component ────────────────────────────────────────────────────────────
 export default function ResultSection({ muhurta, transitions, vara, paksha }: Props) {
   const slots = computeBusinessSlots(transitions, muhurta, vara.index, paksha);
 
@@ -102,7 +152,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
     e.stopPropagation();
     document.dispatchEvent(new CustomEvent(CLOSE_ALL));
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
-    const W = 280, H = 210;
+    const W = 280, H = 230;
     let left = rect.left;
     if (left + W > window.innerWidth - 8) left = window.innerWidth - W - 8;
     if (left < 8) left = 8;
@@ -112,8 +162,14 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
     setPopup(prev => prev?.index === index ? null : { index, pos: { top, left } });
   }
 
+  const infoIcon = (
+    <span onClick={e => e.stopPropagation()}>
+      <InfoDot title="" brief={STAR_LEGEND} descriptionOnly />
+    </span>
+  );
+
   return (
-    <ExpandSection title="Result" accentColor="var(--gold-light)" defaultOpen={true}>
+    <ExpandSection title="Result" accentColor="var(--gold-light)" defaultOpen={true} titleExtra={infoIcon}>
 
       <p style={{
         fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.58rem, 1.6vw, 0.65rem)',
@@ -147,8 +203,8 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
 
               <span className="time-range">{formatTime(startIso)} — {formatTime(endIso)}</span>
 
-              <span style={{ fontSize: '0.65rem', filter: 'brightness(0.7)', marginLeft: 'auto' }}>
-                {slot.starRating}
+              <span style={{ marginLeft: 'auto', fontSize: '1rem' }}>
+                <StarDisplay count={slot.starCount} />
               </span>
             </div>
           );

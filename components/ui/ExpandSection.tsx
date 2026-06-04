@@ -4,12 +4,13 @@ import { useState } from 'react';
 interface ExpandSectionProps {
   title: string;
   icon?: React.ReactNode;
+  titleExtra?: React.ReactNode;
   defaultOpen?: boolean;
   children: React.ReactNode;
   accentColor?: string;
 }
 
-export default function ExpandSection({ title, icon, defaultOpen = false, children, accentColor }: ExpandSectionProps) {
+export default function ExpandSection({ title, icon, titleExtra, defaultOpen = false, children, accentColor }: ExpandSectionProps) {
   const [open, setOpen] = useState(defaultOpen);
 
   return (
@@ -18,6 +19,7 @@ export default function ExpandSection({ title, icon, defaultOpen = false, childr
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           {icon && <span style={{ color: accentColor ?? 'var(--gold)', fontSize: '0.9rem' }}>{icon}</span>}
           <span className="section-title" style={accentColor ? { color: accentColor } : undefined}>{title}</span>
+          {titleExtra}
         </div>
         <svg
           width="14" height="14" viewBox="0 0 14 14" fill="none"

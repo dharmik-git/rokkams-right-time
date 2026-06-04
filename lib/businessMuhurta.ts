@@ -20,7 +20,7 @@ export interface BusinessSlot {
   karanaScore: number;
   paksha: string;
   pakshaScore: number;
-  starRating: string;
+  starCount: number;
 }
 
 export interface ExcludedPeriod {
@@ -127,13 +127,13 @@ export const EXCLUDED_PERIOD_LABELS: Record<string, string> = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function starRating(score: number): string {
-  if (score >= 95) return '⭐⭐⭐⭐⭐';
-  if (score >= 85) return '⭐⭐⭐⭐½';
-  if (score >= 75) return '⭐⭐⭐⭐';
-  if (score >= 65) return '⭐⭐⭐';
-  if (score >= 50) return '⭐⭐';
-  return '⭐';
+function starCount(score: number): number {
+  if (score >= 95) return 5;
+  if (score >= 85) return 4.5;
+  if (score >= 75) return 4;
+  if (score >= 65) return 3;
+  if (score >= 50) return 2;
+  return 1;
 }
 
 interface Slot { start: string | null; end: string | null; }
@@ -261,7 +261,7 @@ export function computeBusinessSlots(
       yogaName: ySlot.name, yogaScore: ys,
       karanaName: kSlot.name, karanaScore: ks,
       paksha, pakshaScore: pakshaScoreVal,
-      starRating: starRating(finalScore),
+      starCount: starCount(finalScore),
     });
   }
 
