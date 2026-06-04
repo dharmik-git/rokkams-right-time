@@ -105,7 +105,7 @@ export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, l
         tabIndex={0}
         aria-label="More info"
         onKeyDown={e => e.key === 'Enter' && show(e as any)}
-        style={large ? { width: '9px', height: '9px' } : undefined}
+        style={large ? { width: '8px', height: '8px' } : undefined}
       />
       {mounted && open && createPortal(popup, document.body)}
     </>
