@@ -59,7 +59,7 @@ function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: str
 
 export default function AuspiciousTime({ muhurta }: Props) {
   return (
-    <ExpandSection title="Auspicious Time" accentColor="#1E8A4C">
+    <ExpandSection title="Auspicious Time" accentColor="var(--auspicious-text)">
       {ORDER.map(({ key, label }) => {
         const raw = (muhurta as any)[key];
         if (raw === null) {

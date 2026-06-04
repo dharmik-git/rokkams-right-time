@@ -22,13 +22,13 @@ function formatSlotTime(start: string | null, end: string | null): string {
 }
 
 function nameColor(isAuspicious: boolean | null | undefined): string | undefined {
-  if (isAuspicious === true)  return '#1E8A4C';
+  if (isAuspicious === true)  return 'var(--auspicious-text)';
   if (isAuspicious === false) return '#CC2020';
   return undefined;
 }
 
 function borderColor(isAuspicious: boolean | null | undefined): string {
-  if (isAuspicious === true)  return 'rgba(30,138,76,0.65)';
+  if (isAuspicious === true)  return 'rgba(61,214,140,0.45)';
   if (isAuspicious === false) return 'rgba(168,16,16,0.5)';
   return 'rgba(200,150,26,0.35)';
 }

@@ -96,7 +96,7 @@ export default function RankingTime({ muhurta, panchangData }: Props) {
     : activeSlot?.labels.join('\n') ?? '';
 
   return (
-    <ExpandSection title="Ranking of Best Auspicious Time" accentColor="#1E8A4C">
+    <ExpandSection title="Ranking of Best Auspicious Time" accentColor="var(--auspicious-text)">
       {ranked.length === 0 ? (
         <p style={{ color: 'var(--moonsilver-dim)', fontStyle: 'italic', fontSize: '0.9rem' }}>No clean auspicious windows today.</p>
       ) : (

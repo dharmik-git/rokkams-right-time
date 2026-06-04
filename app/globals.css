@@ -24,6 +24,7 @@
   --auspicious-bg:  rgba(22, 122, 72, 0.18);
   --inauspicious:   #A81010;
   --inauspicious-bg: rgba(168, 16, 16, 0.18);
+  --auspicious-text: #3DD68C;
 
   --dot-color:      #FFE135;
   --dot-hover:      #FFF066;
@@ -53,9 +54,10 @@
   --auspicious-bg:   rgba(8, 61, 32, 0.14);
   --inauspicious:    #580000;
   --inauspicious-bg: rgba(88, 0, 0, 0.14);
+  --auspicious-text: #1E8A4C;
 
-  --dot-color:       #6F4E37;
-  --dot-hover:       #8B6347;
+  --dot-color:       #9A7055;
+  --dot-hover:       #B08060;
 }
 
 @theme inline {
