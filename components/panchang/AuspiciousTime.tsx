@@ -35,7 +35,7 @@ const ORDER = [
 function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: string; intervals: Interval[] }) {
   const info = MUHURTA_INFO[infoKey];
   return (
-    <div className="time-chip" style={{ alignItems: 'flex-start', gap: '0.4rem' }}>
+    <div className="time-chip" style={{ alignItems: 'center', gap: '0.4rem' }}>
       {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={true} descriptionOnly />}
       <span style={{
         fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)',
