@@ -53,13 +53,25 @@ export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, l
 
   useEffect(() => {
     if (!open) return;
+    function close() { setOpen(false); }
     function outside(e: MouseEvent) {
       const t = e.target as Node;
       if (popupRef.current?.contains(t) || dotRef.current?.contains(t)) return;
       setOpen(false);
     }
+    function touchOutside(e: TouchEvent) {
+      const t = e.target as Node;
+      if (popupRef.current?.contains(t) || dotRef.current?.contains(t)) return;
+      setOpen(false);
+    }
     document.addEventListener('mousedown', outside);
-    return () => document.removeEventListener('mousedown', outside);
+    window.addEventListener('scroll', close, true);   // capture: true catches any nested scroll
+    document.addEventListener('touchstart', touchOutside, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', outside);
+      window.removeEventListener('scroll', close, true);
+      document.removeEventListener('touchstart', touchOutside);
+    };
   }, [open]);
 
   // Fine-tune position after actual render

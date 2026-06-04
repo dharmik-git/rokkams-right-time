@@ -78,16 +78,28 @@ export default function DateNavigator({ dateStr, onChange }: Props) {
     return () => { document.body.style.overflow = ''; };
   }, [pickerOpen]);
 
-  // Close on outside click
+  // Close on outside click, scroll, or touch
   useEffect(() => {
     if (!pickerOpen) return;
+    function close() { setPickerOpen(false); }
     function outside(e: MouseEvent) {
       const t = e.target as Node;
       if (pickerRef.current?.contains(t) || iconRef.current?.contains(t)) return;
       setPickerOpen(false);
     }
+    function touchOutside(e: TouchEvent) {
+      const t = e.target as Node;
+      if (pickerRef.current?.contains(t) || iconRef.current?.contains(t)) return;
+      setPickerOpen(false);
+    }
     document.addEventListener('mousedown', outside);
-    return () => document.removeEventListener('mousedown', outside);
+    window.addEventListener('scroll', close, true);
+    document.addEventListener('touchstart', touchOutside, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', outside);
+      window.removeEventListener('scroll', close, true);
+      document.removeEventListener('touchstart', touchOutside);
+    };
   }, [pickerOpen]);
 
   function openPicker() {
