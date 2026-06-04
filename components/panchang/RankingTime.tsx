@@ -15,10 +15,6 @@ function buildQualityBrief(data: any): string {
   const tithiOk = tithiInfo?.isAuspicious ?? true;
   lines.push(`${tithiOk ? '✅' : '❌'} Tithi (${data.tithi?.name ?? '—'}): ${tithiInfo?.idealFor ?? (tithiOk ? 'Auspicious' : 'Inauspicious')}`);
 
-  const yogaInfo = YOGAS[data.yoga?.name];
-  const yogaOk = yogaInfo?.isAuspicious ?? data.yoga?.isAuspicious ?? true;
-  lines.push(`${yogaOk ? '✅' : '❌'} Yoga (${data.yoga?.name ?? '—'}): ${yogaInfo?.idealFor ?? (yogaOk ? 'Auspicious' : 'Inauspicious')}`);
-
   const varaInfo = VARAS[data.vara?.name];
   const varaOk = varaInfo?.isAuspicious ?? true;
   lines.push(`${varaOk ? '✅' : '❌'} Vara (${data.vara?.name ?? '—'}): ${varaInfo?.idealFor ?? (varaOk ? 'Auspicious' : 'Inauspicious')}`);
@@ -26,6 +22,10 @@ function buildQualityBrief(data: any): string {
   const nakshatraInfo = NAKSHATRAS[data.nakshatra?.name];
   const nakshatraOk = nakshatraInfo?.isAuspicious ?? true;
   lines.push(`${nakshatraOk ? '✅' : '❌'} Nakshatra (${data.nakshatra?.name ?? '—'}): ${nakshatraInfo?.idealFor ?? (nakshatraOk ? 'Auspicious' : 'Inauspicious')}`);
+
+  const yogaInfo = YOGAS[data.yoga?.name];
+  const yogaOk = yogaInfo?.isAuspicious ?? data.yoga?.isAuspicious ?? true;
+  lines.push(`${yogaOk ? '✅' : '❌'} Yoga (${data.yoga?.name ?? '—'}): ${yogaInfo?.idealFor ?? (yogaOk ? 'Auspicious' : 'Inauspicious')}`);
 
   const karanaInfo = KARANAS[data.karana?.name];
   const karanaOk = karanaInfo?.isAuspicious ?? true;
@@ -62,15 +62,26 @@ export default function RankingTime({ muhurta, panchangData }: Props) {
     return () => document.removeEventListener(CLOSE_ALL, handleCloseAll);
   }, []);
 
-  // Close on outside click
+  // Close on outside click, scroll, or touch
   useEffect(() => {
     if (!popup) return;
+    function close() { setPopup(null); }
     function outside(e: MouseEvent) {
       if (popupRef.current?.contains(e.target as Node)) return;
       setPopup(null);
     }
+    function touchOutside(e: TouchEvent) {
+      if (popupRef.current?.contains(e.target as Node)) return;
+      setPopup(null);
+    }
     document.addEventListener('mousedown', outside);
-    return () => document.removeEventListener('mousedown', outside);
+    window.addEventListener('scroll', close, true);
+    document.addEventListener('touchstart', touchOutside, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', outside);
+      window.removeEventListener('scroll', close, true);
+      document.removeEventListener('touchstart', touchOutside);
+    };
   }, [popup]);
 
   function openPopup(e: React.MouseEvent, kind: 'badge' | 'stars', index: number) {
