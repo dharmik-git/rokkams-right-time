@@ -24,39 +24,41 @@ interface Props {
   paksha: 'Shukla' | 'Krishna';
 }
 
-// ── Half-star SVG ─────────────────────────────────────────────────────────────
-// Standard 5-point star path, clipped so left half is gold-filled and
-// right half shows only the outline — matching the half-star image.
-function HalfStar() {
-  const id = 'hs-clip';
-  // Star path centred at 12,12 in a 24×24 viewBox
-  const path = 'M12 2l2.55 7.85H22l-6.27 4.56 2.39 7.37L12 17.27l-6.12 4.51 2.39-7.37L2 9.85h7.45z';
+// ── Star SVG components ───────────────────────────────────────────────────────
+const STAR_PATH = 'M12 2l2.55 7.85H22l-6.27 4.56 2.39 7.37L12 17.27l-6.12 4.51 2.39-7.37L2 9.85h7.45z';
+const STAR_STYLE: React.CSSProperties = {
+  display: 'inline-block', verticalAlign: '-0.15em', filter: 'brightness(0.75)',
+};
+
+function FullStar() {
   return (
-    <svg
-      width="1em" height="1em" viewBox="0 0 24 24"
-      style={{ display: 'inline-block', verticalAlign: '-0.15em', filter: 'brightness(0.7)' }}
-      aria-hidden
-    >
+    <svg width="1em" height="1em" viewBox="0 0 24 24" style={STAR_STYLE} aria-hidden>
+      <path d={STAR_PATH} fill="#f5c518" stroke="#f5c518" strokeWidth="0.5" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function HalfStar() {
+  return (
+    <svg width="1em" height="1em" viewBox="0 0 24 24" style={STAR_STYLE} aria-hidden>
       <defs>
-        <clipPath id={id}>
+        <clipPath id="hs-clip">
           <rect x="0" y="0" width="12" height="24" />
         </clipPath>
       </defs>
-      {/* Outline star (full) */}
-      <path d={path} fill="none" stroke="#f5c518" strokeWidth="1.5" strokeLinejoin="round" />
-      {/* Filled left half */}
-      <path d={path} fill="#f5c518" clipPath={`url(#${id})`} />
+      <path d={STAR_PATH} fill="none" stroke="#f5c518" strokeWidth="1.5" strokeLinejoin="round" />
+      <path d={STAR_PATH} fill="#f5c518" clipPath="url(#hs-clip)" />
     </svg>
   );
 }
 
 // ── Star display ──────────────────────────────────────────────────────────────
-function StarDisplay({ count }: { count: number }) {
+function StarDisplay({ count, size = '1rem' }: { count: number; size?: string }) {
   const full = Math.floor(count);
   const half = count % 1 >= 0.5;
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '1px', fontSize: '0.65em' }}>
-      {'⭐'.repeat(full)}
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '1px', fontSize: size }}>
+      {Array.from({ length: full }, (_, i) => <FullStar key={i} />)}
       {half && <HalfStar />}
     </span>
   );
@@ -89,24 +91,25 @@ function PopupContent({ slot }: { slot: BusinessSlot }) {
 
   return (
     <div style={{ fontSize: '0.78rem', lineHeight: 1.6 }}>
+      {/* Score + stars at the top */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+        <span style={{ color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700 }}>
+          {slot.finalScore.toFixed(1)}
+        </span>
+        <StarDisplay count={slot.starCount} size="0.9rem" />
+      </div>
+
+      <div style={{ borderTop: '1px solid var(--night-border)', marginBottom: '0.35rem' }} />
+
       {rows.map(r => (
         <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.1rem' }}>
           <span style={{ color: 'var(--moonsilver-dim)', fontFamily: 'Cinzel, serif', fontSize: '0.68rem', minWidth: 60 }}>
             {r.label}
           </span>
           <span style={{ color: 'var(--moonsilver)', flex: 1 }}>{r.value}</span>
-          <StarDisplay count={elementStarCount(r.score)} />
+          <StarDisplay count={elementStarCount(r.score)} size="0.7rem" />
         </div>
       ))}
-
-      <div style={{ borderTop: '1px solid var(--night-border)', margin: '0.45rem 0 0.3rem' }} />
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <span style={{ color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700 }}>
-          {slot.finalScore.toFixed(1)}
-        </span>
-        <StarDisplay count={slot.starCount} />
-      </div>
     </div>
   );
 }
@@ -164,7 +167,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
 
   const infoIcon = (
     <span onClick={e => e.stopPropagation()}>
-      <InfoDot title="" brief={STAR_LEGEND} descriptionOnly />
+      <InfoDot title="" brief={STAR_LEGEND} descriptionOnly label="?" />
     </span>
   );
 
@@ -203,9 +206,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
 
               <span className="time-range">{formatTime(startIso)} — {formatTime(endIso)}</span>
 
-              <span style={{ marginLeft: 'auto', fontSize: '1rem' }}>
-                <StarDisplay count={slot.starCount} />
-              </span>
+              <StarDisplay count={slot.starCount} size="1rem" />
             </div>
           );
         })

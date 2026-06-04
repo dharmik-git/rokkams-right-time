@@ -10,9 +10,10 @@ interface InfoDotProps {
   isAuspicious?: boolean | null;
   descriptionOnly?: boolean;
   large?: boolean;
+  label?: string;
 }
 
-export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, large }: InfoDotProps) {
+export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, large, label }: InfoDotProps) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const [mounted, setMounted] = useState(false);
@@ -117,8 +118,12 @@ export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, l
         tabIndex={0}
         aria-label="More info"
         onKeyDown={e => e.key === 'Enter' && show(e as any)}
-        style={large ? { width: '8px', height: '8px' } : undefined}
-      />
+        style={label ? {
+          width: 'auto', height: '15px', minWidth: '15px', borderRadius: '8px',
+          padding: '0 4px', fontSize: '10px', fontWeight: 700,
+          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+        } : large ? { width: '8px', height: '8px' } : undefined}
+      >{label}</span>
       {mounted && open && createPortal(popup, document.body)}
     </>
   );
