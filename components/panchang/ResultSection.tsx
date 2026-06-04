@@ -9,13 +9,6 @@ import type { DayTransitions } from '@/lib/calculations/transitions';
 
 const CLOSE_ALL = 'infodot:closeAll';
 
-const STAR_LEGEND =
-  '⭐⭐⭐⭐⭐  Excellent   (95+)\n' +
-  '⭐⭐⭐⭐½  Very Good  (85–94)\n' +
-  '⭐⭐⭐⭐     Good        (75–84)\n' +
-  '⭐⭐⭐        Average    (65–74)\n' +
-  '⭐⭐           Below Avg (50–64)\n' +
-  '⭐              Poor        (<50)';
 
 interface Props {
   muhurta: Record<string, any>;
@@ -27,7 +20,8 @@ interface Props {
 // ── Star SVG components ───────────────────────────────────────────────────────
 const STAR_PATH = 'M12 2l2.55 7.85H22l-6.27 4.56 2.39 7.37L12 17.27l-6.12 4.51 2.39-7.37L2 9.85h7.45z';
 const STAR_STYLE: React.CSSProperties = {
-  display: 'inline-block', verticalAlign: '-0.15em', filter: 'brightness(0.75)',
+  display: 'inline-block', verticalAlign: '-0.15em',
+  filter: 'brightness(var(--star-brightness, 0.95))',
 };
 
 function FullStar() {
@@ -78,8 +72,31 @@ function rankClass(i: number) {
   return i < 3 ? `rank-${i + 1}` : 'rank-n';
 }
 
+// ── Star legend for the ? popup ───────────────────────────────────────────────
+function StarLegend() {
+  const rows = [
+    { count: 5,   label: 'Excellent',  range: '95+' },
+    { count: 4.5, label: 'Very Good',  range: '85–94' },
+    { count: 4,   label: 'Good',       range: '75–84' },
+    { count: 3,   label: 'Average',    range: '65–74' },
+    { count: 2,   label: 'Below Avg',  range: '50–64' },
+    { count: 1,   label: 'Poor',       range: '<50' },
+  ];
+  return (
+    <div style={{ lineHeight: 1.9 }}>
+      {rows.map(r => (
+        <div key={r.label} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+          <StarDisplay count={r.count} size="0.7rem" />
+          <span style={{ color: 'var(--moonsilver)', fontSize: '0.78rem', flex: 1 }}>{r.label}</span>
+          <span style={{ color: 'var(--moonsilver-dim)', fontSize: '0.68rem' }}>{r.range}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Popup content ─────────────────────────────────────────────────────────────
-function PopupContent({ slot }: { slot: BusinessSlot }) {
+function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
   const rows: { label: string; value: string; score: number }[] = [
     { label: 'Tithi',     value: slot.tithiName,     score: slot.tithiScore },
     { label: 'Vara',      value: slot.varaName,       score: slot.varaScore },
@@ -91,12 +108,11 @@ function PopupContent({ slot }: { slot: BusinessSlot }) {
 
   return (
     <div style={{ fontSize: '0.78rem', lineHeight: 1.6 }}>
-      {/* Score + stars at the top */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-        <span style={{ color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontSize: '0.72rem', fontWeight: 700 }}>
-          {slot.finalScore.toFixed(1)}
+      {/* Rank at the top */}
+      <div style={{ marginBottom: '0.4rem' }}>
+        <span style={{ color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 700 }}>
+          #{rank}
         </span>
-        <StarDisplay count={slot.starCount} size="0.9rem" />
       </div>
 
       <div style={{ borderTop: '1px solid var(--night-border)', marginBottom: '0.35rem' }} />
@@ -167,7 +183,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
 
   const infoIcon = (
     <span onClick={e => e.stopPropagation()}>
-      <InfoDot title="" brief={STAR_LEGEND} descriptionOnly label="?" />
+      <InfoDot title="" brief="" briefNode={<StarLegend />} descriptionOnly label="?" />
     </span>
   );
 
@@ -220,7 +236,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
           onClick={e => e.stopPropagation()}
           onMouseDown={e => e.stopPropagation()}
         >
-          <PopupContent slot={slots[popup.index]} />
+          <PopupContent slot={slots[popup.index]} rank={popup.index + 1} />
         </div>,
         document.body,
       )}

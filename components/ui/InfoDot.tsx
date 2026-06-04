@@ -7,13 +7,14 @@ const CLOSE_ALL = 'infodot:closeAll';
 interface InfoDotProps {
   title: string;
   brief: string;
+  briefNode?: React.ReactNode;
   isAuspicious?: boolean | null;
   descriptionOnly?: boolean;
   large?: boolean;
   label?: string;
 }
 
-export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, large, label }: InfoDotProps) {
+export default function InfoDot({ title, brief, briefNode, isAuspicious, descriptionOnly, large, label }: InfoDotProps) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ top: 0, left: 0 });
   const [mounted, setMounted] = useState(false);
@@ -103,7 +104,9 @@ export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, l
           {isAuspicious ? '✦ Auspicious' : '✗ Inauspicious'}
         </span>
       )}
-      <div style={{ fontSize: '0.82rem', color: 'var(--moonsilver)', lineHeight: 1.5, whiteSpace: 'pre-line' }}>{brief}</div>
+      <div style={{ fontSize: '0.82rem', color: 'var(--moonsilver)', lineHeight: 1.5, whiteSpace: 'pre-line' }}>
+        {briefNode ?? brief}
+      </div>
     </div>
   );
 
@@ -111,7 +114,7 @@ export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, l
     <>
       <span
         ref={dotRef}
-        className="info-dot"
+        className={label ? undefined : 'info-dot'}
         onClick={show}
         onTouchEnd={e => show(e)}
         role="button"
@@ -119,9 +122,13 @@ export default function InfoDot({ title, brief, isAuspicious, descriptionOnly, l
         aria-label="More info"
         onKeyDown={e => e.key === 'Enter' && show(e as any)}
         style={label ? {
-          width: 'auto', height: '15px', minWidth: '15px', borderRadius: '8px',
-          padding: '0 4px', fontSize: '10px', fontWeight: 700,
-          display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--dot-color)',
+          fontFamily: 'Cinzel, serif',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          cursor: 'pointer',
+          lineHeight: 1,
+          userSelect: 'none',
         } : large ? { width: '8px', height: '8px' } : undefined}
       >{label}</span>
       {mounted && open && createPortal(popup, document.body)}

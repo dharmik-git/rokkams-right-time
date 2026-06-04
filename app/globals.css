@@ -29,6 +29,7 @@
 
   --dot-color:      #FFE135;
   --dot-hover:      #FFF066;
+  --star-brightness: 0.95;
 }
 
 /* ── Light palette ───────────────────────────────────────────────────── */
@@ -60,6 +61,7 @@
 
   --dot-color:       #9A7055;
   --dot-hover:       #B08060;
+  --star-brightness: 0.75;
 }
 
 @theme inline {
