@@ -11,32 +11,32 @@ export const ELEMENT_TYPES: Record<string, { label: string; description: string;
   tithi: {
     label: 'Tithi (Lunar Day)',
     description: 'Tithi is the lunar day — one of the five essential Panchang limbs.',
-    brief: 'determines auspiciousness for ceremonies and activities',
+    brief: 'Determines auspiciousness for ceremonies and activities',
   },
   nakshatra: {
     label: 'Nakshatra (Lunar Mansion)',
     description: 'Nakshatra is the lunar mansion occupied by the Moon.',
-    brief: 'influences the quality and outcome of events',
+    brief: 'Influences the quality and outcome of events',
   },
   yoga: {
     label: 'Yoga (Sun-Moon Combination)',
     description: 'Yoga is the Sun-Moon longitudinal combination, indicating day quality.',
-    brief: 'affects the overall quality of the day',
+    brief: 'Affects the overall quality of the day',
   },
   karana: {
     label: 'Karana (Half-Day Period)',
     description: 'Karana is half a Tithi — each lunar day is split into two Karanas.',
-    brief: 'shapes success of activities begun within it',
+    brief: 'Shapes success of activities begun within it',
   },
   vara: {
     label: 'Vara (Weekday)',
     description: 'Vara is the weekday, each ruled by a planet imparting specific qualities.',
-    brief: 'influences all activities of the day',
+    brief: 'Influences all activities of the day',
   },
   paksha: {
     label: 'Paksha (Lunar Fortnight)',
     description: 'Paksha is the lunar fortnight — Shukla (waxing) or Krishna (waning).',
-    brief: 'waxing favors beginnings, waning favors completion',
+    brief: 'Waxing favors beginnings, waning favors completion',
   },
 };
 
