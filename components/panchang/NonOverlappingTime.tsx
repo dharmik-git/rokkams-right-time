@@ -86,7 +86,7 @@ export default function NonOverlappingTime({ muhurta }: Props) {
   }
 
   return (
-    <ExpandSection title="Non-Overlapped Auspicious Times" accentColor="var(--gold-light)">
+    <ExpandSection title="Non-Overlapped Auspicious Times" accentColor="#1E8A4C">
       {AUSPICIOUS_ORDER.map(({ key, label }) => {
         const raw = muhurta[key];
         if (raw === null) {

@@ -25,8 +25,8 @@
   --inauspicious:   #A81010;
   --inauspicious-bg: rgba(168, 16, 16, 0.18);
 
-  --dot-color:      #F0A820;
-  --dot-hover:      #FFD040;
+  --dot-color:      #3A8FE0;
+  --dot-hover:      #62AEFF;
 }
 
 /* ── Light palette ───────────────────────────────────────────────────── */
@@ -54,8 +54,8 @@
   --inauspicious:    #580000;
   --inauspicious-bg: rgba(88, 0, 0, 0.14);
 
-  --dot-color:       #A04800;
-  --dot-hover:       #C05800;
+  --dot-color:       #1A5FA0;
+  --dot-hover:       #2478C8;
 }
 
 @theme inline {

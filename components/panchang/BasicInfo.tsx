@@ -22,13 +22,13 @@ function formatSlotTime(start: string | null, end: string | null): string {
 }
 
 function nameColor(isAuspicious: boolean | null | undefined): string | undefined {
-  if (isAuspicious === true)  return '#4EC08A';
+  if (isAuspicious === true)  return '#1E8A4C';
   if (isAuspicious === false) return '#CC2020';
   return undefined;
 }
 
 function borderColor(isAuspicious: boolean | null | undefined): string {
-  if (isAuspicious === true)  return 'rgba(22,122,72,0.55)';
+  if (isAuspicious === true)  return 'rgba(30,138,76,0.65)';
   if (isAuspicious === false) return 'rgba(168,16,16,0.5)';
   return 'rgba(200,150,26,0.35)';
 }
@@ -47,7 +47,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
       {/* Label row — dot BEFORE the label text */}
       <div style={{ display: 'flex', alignItems: 'center', paddingTop: '0.35rem', gap: '0.4rem' }}>
         <div className="info-label" style={{ minWidth: 90, flexShrink: 0 }}>
-          {labelInfo && <InfoDot title={labelInfo.label} brief={labelInfo.brief} />}
+          {labelInfo && <InfoDot title={labelInfo.label} brief={labelInfo.brief} large />}
           {label}
         </div>
       </div>
@@ -159,7 +159,7 @@ export default function BasicInfo({ data }: Props) {
       {/* Vara */}
       <div className="info-row">
         <div className="info-label">
-          {VARAS[vara.name] && <InfoDot title={ELEMENT_TYPES.vara.label} brief={ELEMENT_TYPES.vara.brief} />}
+          {VARAS[vara.name] && <InfoDot title={ELEMENT_TYPES.vara.label} brief={ELEMENT_TYPES.vara.brief} large />}
           Vara
         </div>
         <div className="info-value">
@@ -199,7 +199,7 @@ export default function BasicInfo({ data }: Props) {
       {/* Paksha */}
       <div className="info-row">
         <div className="info-label">
-          {PAKSHAS[tithi.paksha] && <InfoDot title={ELEMENT_TYPES.paksha.label} brief={ELEMENT_TYPES.paksha.brief} />}
+          {PAKSHAS[tithi.paksha] && <InfoDot title={ELEMENT_TYPES.paksha.label} brief={ELEMENT_TYPES.paksha.brief} large />}
           Paksha
         </div>
         <div className="info-value">
