@@ -213,7 +213,7 @@ export function computeTransitions(dayStart: Date, dayEnd: Date): DayTransitions
   });
 
   const FIXED_K  = ['Kimstughna','Shakuni','Chatushpada','Naga'];
-  const REPEAT_K = ['Bava','Balava','Kaulava','Taitula','Garaja','Vanija','Vishti'];
+  const REPEAT_K = ['Bava','Balava','Kaulava','Taitila','Garija','Vanija','Vishti'];
 
   karanaSegs;
   const karanaSlots: KaranaSlot[] = karanaSegs.map((seg, i) => {
