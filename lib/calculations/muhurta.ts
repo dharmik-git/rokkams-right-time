@@ -68,14 +68,8 @@ export function calculateMuhurta(
     },
   ];
 
-  // Varjyam: ~24 min period, approximated at a fixed offset based on day
-  // (Moon-based; simplified here — crosses midnight so anchored pre-sunrise)
-  const varjyam: TimeInterval[] = [
-    {
-      start: addMinutes(sunrise, -120),
-      end: addMinutes(sunrise, -96),
-    },
-  ];
+  // Varjyam: computed nakshatra-based in the API route via computeVarjyam()
+  const varjyam: TimeInterval[] = [];
 
   // Baana: Tara-based inauspicious period (varies by weekday and Tithi)
   // Simplified: 15-min window in early morning based on weekday offset
