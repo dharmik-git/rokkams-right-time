@@ -1,10 +1,10 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTime } from '@/lib/formatTime';
+import { formatTimeWithDate } from '@/lib/formatTime';
 import { ELEMENT_TYPES, TITHIS, NAKSHATRAS, YOGAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
 
-interface Props { data: any; }
+interface Props { data: any; date: string; }
 
 interface Slot {
   name: string;
@@ -15,9 +15,9 @@ interface Slot {
   end: string | null;
 }
 
-function formatSlotTime(start: string | null, end: string | null): string {
-  const s = start ? formatTime(start) : '00:00';
-  const e = end   ? formatTime(end)   : '23:59';
+function formatSlotTime(start: string | null, end: string | null, date: string): string {
+  const s = start ? formatTimeWithDate(start, date) : '00:00';
+  const e = end   ? formatTimeWithDate(end, date)   : '23:59';
   return `${s} – ${e}`;
 }
 
@@ -33,12 +33,13 @@ function borderColor(isAuspicious: boolean | null | undefined): string {
   return 'rgba(200,150,26,0.35)';
 }
 
-function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: {
+function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, date }: {
   label: string;
   labelDotKey?: string;
   slots: Slot[];
   getValueInfo: (name: string) => { isAuspicious: boolean } | null;
   getValueBrief: (name: string) => string | undefined;
+  date: string;
 }) {
   const labelInfo = labelDotKey ? ELEMENT_TYPES[labelDotKey] : null;
 
@@ -57,7 +58,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
         const displayName = slot.paksha ? `${slot.paksha} ${slot.name}` : slot.name;
         const vi = getValueInfo(slot.name);
         const brief = getValueBrief(slot.name);
-        const timing = formatSlotTime(slot.start, slot.end);
+        const timing = formatSlotTime(slot.start, slot.end, date);
         const color = nameColor(vi?.isAuspicious);
         return (
           <div key={i} style={{
@@ -120,7 +121,7 @@ function SimpleRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function BasicInfo({ data }: Props) {
+export default function BasicInfo({ data, date }: Props) {
   const { tithi, nakshatra, yoga, karana, vara, sunMoonTimes, moonSign, suryaNakshatra, suryaPada, nakshatraPada, transitions } = data;
 
   const tithiSlots: Slot[] = transitions?.tithi?.length
@@ -146,10 +147,10 @@ export default function BasicInfo({ data }: Props) {
   return (
     <ExpandSection title="Basic Info" defaultOpen={false}>
       {/* Sun & Moon — no heading; no border between Sunrise/Sunset pair and Moonrise/Moonset pair */}
-      <SunMoonRow label="Sunrise"  value={formatTime(sunMoonTimes.sunrise)} noBorder />
-      <SunMoonRow label="Sunset"   value={formatTime(sunMoonTimes.sunset)} />
-      <SunMoonRow label="Moonrise" value={formatTime(sunMoonTimes.moonrise) || '—'} noBorder />
-      <SunMoonRow label="Moonset"  value={formatTime(sunMoonTimes.moonset) || '—'} />
+      <SunMoonRow label="Sunrise"  value={formatTimeWithDate(sunMoonTimes.sunrise, date)} noBorder />
+      <SunMoonRow label="Sunset"   value={formatTimeWithDate(sunMoonTimes.sunset, date)} />
+      <SunMoonRow label="Moonrise" value={formatTimeWithDate(sunMoonTimes.moonrise, date) || '—'} noBorder />
+      <SunMoonRow label="Moonset"  value={formatTimeWithDate(sunMoonTimes.moonset, date) || '—'} />
 
       {/* Order: Tithi, Vara, Nakshatra, Yoga, Karana, Paksha */}
       <ElementRow
@@ -158,6 +159,7 @@ export default function BasicInfo({ data }: Props) {
         slots={tithiSlots}
         getValueInfo={name => TITHIS[name] ?? null}
         getValueBrief={name => TITHIS[name]?.idealFor}
+        date={date}
       />
 
       <ElementRow
@@ -166,6 +168,7 @@ export default function BasicInfo({ data }: Props) {
         slots={varaSlots}
         getValueInfo={name => VARAS[name] ?? null}
         getValueBrief={name => VARAS[name]?.idealFor}
+        date={date}
       />
 
       <ElementRow
@@ -180,6 +183,7 @@ export default function BasicInfo({ data }: Props) {
           const base = name.replace(/ \(P\d\)$/, '');
           return NAKSHATRAS[base]?.idealFor;
         }}
+        date={date}
       />
       <ElementRow
         label="Yoga"
@@ -187,6 +191,7 @@ export default function BasicInfo({ data }: Props) {
         slots={yogaSlots}
         getValueInfo={name => YOGAS[name] ?? null}
         getValueBrief={name => YOGAS[name]?.idealFor}
+        date={date}
       />
       <ElementRow
         label="Karana"
@@ -194,6 +199,7 @@ export default function BasicInfo({ data }: Props) {
         slots={karanaSlots}
         getValueInfo={name => KARANAS[name] ?? null}
         getValueBrief={name => KARANAS[name]?.idealFor}
+        date={date}
       />
 
       <ElementRow
@@ -202,6 +208,7 @@ export default function BasicInfo({ data }: Props) {
         slots={pakshaSlots}
         getValueInfo={name => PAKSHAS[name] ?? null}
         getValueBrief={name => PAKSHAS[name]?.idealFor}
+        date={date}
       />
 
       {/* Rashi & Nakshatra */}

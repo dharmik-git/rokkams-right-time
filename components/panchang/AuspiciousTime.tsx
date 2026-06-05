@@ -1,12 +1,13 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTime } from '@/lib/formatTime';
+import { formatTimeWithDate } from '@/lib/formatTime';
 import { MUHURTA_INFO } from '@/lib/data/descriptions';
 
 interface Interval { start: string; end: string; }
 
 interface Props {
+  date: string;
   muhurta: {
     brahmaMuhurta: Interval;
     abhijitMuhurta: Interval;
@@ -32,7 +33,7 @@ const ORDER = [
   { key: 'nishitaMuhurta',   label: 'Nishita Muhurta' },
 ];
 
-function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: string; intervals: Interval[] }) {
+function MuhurtaRow({ infoKey, label, intervals, date }: { infoKey: string; label: string; intervals: Interval[]; date: string }) {
   const info = MUHURTA_INFO[infoKey];
   return (
     <div className="time-chip" style={{ alignItems: 'center', gap: '0.4rem' }}>
@@ -49,7 +50,7 @@ function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: str
             fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
             fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
           }}>
-            {formatTime(iv.start)} — {formatTime(iv.end)}
+            {formatTimeWithDate(iv.start, date)} — {formatTimeWithDate(iv.end, date)}
           </span>
         ))}
       </div>
@@ -57,7 +58,7 @@ function MuhurtaRow({ infoKey, label, intervals }: { infoKey: string; label: str
   );
 }
 
-export default function AuspiciousTime({ muhurta }: Props) {
+export default function AuspiciousTime({ muhurta, date }: Props) {
   return (
     <ExpandSection title="Auspicious Time" accentColor="var(--auspicious-text)">
       {ORDER.map(({ key, label }) => {
@@ -72,7 +73,7 @@ export default function AuspiciousTime({ muhurta }: Props) {
           );
         }
         const intervals: Interval[] = Array.isArray(raw) ? raw : [raw];
-        return <MuhurtaRow key={key} infoKey={key} label={label} intervals={intervals} />;
+        return <MuhurtaRow key={key} infoKey={key} label={label} intervals={intervals} date={date} />;
       })}
     </ExpandSection>
   );

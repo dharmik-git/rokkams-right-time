@@ -10,6 +10,26 @@ export function formatTime(iso: string | null | undefined): string {
   });
 }
 
+function dateDiffDays(from: string, to: string): number {
+  const a = new Date(from + 'T00:00:00');
+  const b = new Date(to + 'T00:00:00');
+  return Math.round((b.getTime() - a.getTime()) / 86400000);
+}
+
+export function formatTimeWithDate(iso: string | null | undefined, pageDate: string): string {
+  if (!iso) return '—';
+  const timeStr = new Date(iso).toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: MUSCAT_TZ,
+  });
+  const muscatDate = new Intl.DateTimeFormat('en-CA', { timeZone: MUSCAT_TZ }).format(new Date(iso));
+  if (Math.abs(dateDiffDays(pageDate, muscatDate)) <= 1) return timeStr;
+  const [, m, d] = muscatDate.split('-').map(Number);
+  return `${timeStr} [${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}]`;
+}
+
 export function formatDateDisplay(dateStr: string): string {
   const [y, m, d] = dateStr.split('-').map(Number);
   return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
