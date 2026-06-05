@@ -155,9 +155,9 @@ export function calculateMuhurta(
     },
   ];
 
-  // Pratah Sandhya: 48 min before sunrise → sunrise
+  // Pratah Sandhya: 63 min before sunrise → sunrise (matches DrikPanchang)
   const pratahSandhya: TimeInterval = {
-    start: addMinutes(sunrise, -48),
+    start: addMinutes(sunrise, -63),
     end: sunrise,
   };
 
@@ -168,10 +168,10 @@ export function calculateMuhurta(
     end: new Date(sunrise.getTime() + 11 * muhurtaDurationMs),
   };
 
-  // Sayahana Sandhya: sunset → 48 min after sunset
+  // Sayahana Sandhya: sunset → 63 min after sunset (matches DrikPanchang)
   const sayahanaSandhya: TimeInterval = {
     start: sunset,
-    end: addMinutes(sunset, 48),
+    end: addMinutes(sunset, 63),
   };
 
   // Nishita Muhurta: 8th of 15 night-muhurtas (midnight)
