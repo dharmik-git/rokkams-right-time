@@ -112,6 +112,36 @@ function findNakOccurrences(scanStartJdn: number, scanEndJdn: number): NakOccurr
   return occ;
 }
 
+// Nakshatra indices (0=Ashwini…26=Revati) that form Vidal Yoga.
+// Calibrated directly against DrikPanchang: Vidal Yoga runs for the full
+// duration of each of these nakshatras, clipped to the panchang day.
+const VIDAL_YOGA_NAKSHATRAS = new Set([2, 6, 8, 11, 14, 16, 17, 19, 21, 26]);
+
+/**
+ * Compute Vidal Yoga interval(s) for the panchang day [sunrise, nextSunrise).
+ * Each Vidaal nakshatra active during the day contributes one window equal to
+ * the nakshatra's span clipped to [sunrise, nextSunrise]. Multiple windows are
+ * possible if two Vidaal nakshatras both transit within the same day.
+ */
+export function computeVidalYoga(sunrise: Date, nextSunrise: Date): TimeInterval[] {
+  const dayStart = dateToJdn(sunrise);
+  const dayEnd = dateToJdn(nextSunrise);
+
+  const occurrences = findNakOccurrences(dayStart - 0.1, dayEnd + 0.1);
+
+  const out: TimeInterval[] = [];
+  for (const o of occurrences) {
+    if (!VIDAL_YOGA_NAKSHATRAS.has(o.index)) continue;
+    const windowStart = Math.max(o.entryJdn, dayStart);
+    const windowEnd   = Math.min(o.exitJdn,  dayEnd);
+    if (windowEnd > windowStart) {
+      out.push({ start: jdnToUTC(windowStart), end: jdnToUTC(windowEnd) });
+    }
+  }
+  out.sort((a, b) => a.start.getTime() - b.start.getTime());
+  return out;
+}
+
 /**
  * Compute the Amrit Kalam window(s) that begin within the panchang day
  * [sunrise, nextSunrise). Returns an empty array on days where Amrit Kalam is

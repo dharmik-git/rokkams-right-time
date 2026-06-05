@@ -100,14 +100,8 @@ export function calculateMuhurta(
     },
   ];
 
-  // Vidal Yoga: unfavorable Vara-Tithi combination period (~48 min, mid-morning)
-  const vidalOffsets = [180, 210, 150, 240, 120, 270, 160];
-  const vidalYoga: TimeInterval[] = [
-    {
-      start: addMinutes(sunrise, vidalOffsets[dayOfWeek]),
-      end: addMinutes(sunrise, vidalOffsets[dayOfWeek] + 48),
-    },
-  ];
+  // Vidal Yoga: computed nakshatra-based in the API route via computeVidalYoga()
+  const vidalYoga: TimeInterval[] = [];
 
   // Bhadra (Visti Karana): currently-active Visti half-Tithi period
   // Approximated as ~90 min window in the evening (before sunset)
