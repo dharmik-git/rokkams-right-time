@@ -1,8 +1,7 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTimeWithDate } from '@/lib/formatTime';
-import TimeValue from '@/components/ui/TimeValue';
+import { formatTime } from '@/lib/formatTime';
 import { MUHURTA_INFO } from '@/lib/data/descriptions';
 
 interface Interval { start: string; end: string; }
@@ -75,9 +74,9 @@ function findOverlaps(src: Interval, muhurta: Record<string, any>): Array<{ labe
   return overlaps;
 }
 
-interface Props { muhurta: Record<string, any>; date: string; }
+interface Props { muhurta: Record<string, any>; }
 
-export default function NonOverlappingTime({ muhurta, date }: Props) {
+export default function NonOverlappingTime({ muhurta }: Props) {
   // Collect all inauspicious intervals (flat list for subtraction)
   const badIntervals: Interval[] = [];
   for (const { key } of INAUSPICIOUS_ORDER) {
@@ -113,7 +112,7 @@ export default function NonOverlappingTime({ muhurta, date }: Props) {
         let brief = info?.idealFor ?? '';
         if (uniqueOverlaps.length > 0) {
           const cutLines = uniqueOverlaps
-            .map(o => `✗ Cut by ${o.label}: ${formatTimeWithDate(o.interval.start, date)} – ${formatTimeWithDate(o.interval.end, date)}`)
+            .map(o => `✗ Cut by ${o.label}: ${formatTime(o.interval.start)} – ${formatTime(o.interval.end)}`)
             .join('\n');
           brief = (brief ? brief + '\n\n' : '') + cutLines;
         }
@@ -142,7 +141,7 @@ export default function NonOverlappingTime({ muhurta, date }: Props) {
                     fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
                     fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
                   }}>
-                    <TimeValue iso={iv.start} date={date} /> — <TimeValue iso={iv.end} date={date} />
+                    {formatTime(iv.start)} — {formatTime(iv.end)}
                   </span>
                 ))
               )}

@@ -79,17 +79,16 @@ export default function Home() {
         {data && !loading && (
           <div key={dateStr} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }} className="animate-in">
 
-            <BasicInfo data={data} date={dateStr} />
-            <AuspiciousTime muhurta={data.muhurta} date={dateStr} />
-            <InauspiciousTime muhurta={data.muhurta} date={dateStr} />
-            <NonOverlappingTime muhurta={data.muhurta} date={dateStr} />
-            <RankingTime muhurta={data.muhurta} panchangData={data} date={dateStr} />
+            <BasicInfo data={data} />
+            <AuspiciousTime muhurta={data.muhurta} />
+            <InauspiciousTime muhurta={data.muhurta} />
+            <NonOverlappingTime muhurta={data.muhurta} />
+            <RankingTime muhurta={data.muhurta} panchangData={data} />
             <ResultSection
                 muhurta={data.muhurta}
                 transitions={data.transitions}
                 vara={data.vara}
                 paksha={data.paksha}
-                date={dateStr}
               />
 
             {/* Footer */}

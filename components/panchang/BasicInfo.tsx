@@ -1,10 +1,10 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
 import ExpandSection from '@/components/ui/ExpandSection';
-import TimeValue from '@/components/ui/TimeValue';
+import { formatTime } from '@/lib/formatTime';
 import { ELEMENT_TYPES, TITHIS, NAKSHATRAS, YOGAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
 
-interface Props { data: any; date: string; }
+interface Props { data: any; }
 
 interface Slot {
   name: string;
@@ -15,14 +15,10 @@ interface Slot {
   end: string | null;
 }
 
-function SlotTiming({ start, end, date }: { start: string | null; end: string | null; date: string }) {
-  return (
-    <>
-      {start ? <TimeValue iso={start} date={date} /> : '00:00'}
-      {' – '}
-      {end ? <TimeValue iso={end} date={date} /> : '23:59'}
-    </>
-  );
+function formatSlotTime(start: string | null, end: string | null): string {
+  const s = start ? formatTime(start) : '00:00';
+  const e = end   ? formatTime(end)   : '23:59';
+  return `${s} – ${e}`;
 }
 
 function nameColor(isAuspicious: boolean | null | undefined): string | undefined {
@@ -37,13 +33,12 @@ function borderColor(isAuspicious: boolean | null | undefined): string {
   return 'rgba(200,150,26,0.35)';
 }
 
-function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, date }: {
+function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: {
   label: string;
   labelDotKey?: string;
   slots: Slot[];
   getValueInfo: (name: string) => { isAuspicious: boolean } | null;
   getValueBrief: (name: string) => string | undefined;
-  date: string;
 }) {
   const labelInfo = labelDotKey ? ELEMENT_TYPES[labelDotKey] : null;
 
@@ -62,6 +57,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, da
         const displayName = slot.paksha ? `${slot.paksha} ${slot.name}` : slot.name;
         const vi = getValueInfo(slot.name);
         const brief = getValueBrief(slot.name);
+        const timing = formatSlotTime(slot.start, slot.end);
         const color = nameColor(vi?.isAuspicious);
         return (
           <div key={i} style={{
@@ -97,7 +93,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, da
               whiteSpace: 'nowrap',
               textAlign: 'right',
             }}>
-              <SlotTiming start={slot.start} end={slot.end} date={date} />
+              {timing}
             </span>
           </div>
         );
@@ -106,7 +102,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, da
   );
 }
 
-function SunMoonRow({ label, value, noBorder }: { label: string; value: React.ReactNode; noBorder?: boolean }) {
+function SunMoonRow({ label, value, noBorder }: { label: string; value: string; noBorder?: boolean }) {
   return (
     <div className="info-row" style={noBorder ? { borderBottom: 'none' } : undefined}>
       <div className="info-label">{label}</div>
@@ -124,7 +120,7 @@ function SimpleRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function BasicInfo({ data, date }: Props) {
+export default function BasicInfo({ data }: Props) {
   const { tithi, nakshatra, yoga, karana, vara, sunMoonTimes, moonSign, suryaNakshatra, suryaPada, nakshatraPada, transitions } = data;
 
   const tithiSlots: Slot[] = transitions?.tithi?.length
@@ -150,10 +146,10 @@ export default function BasicInfo({ data, date }: Props) {
   return (
     <ExpandSection title="Basic Info" defaultOpen={false}>
       {/* Sun & Moon — no heading; no border between Sunrise/Sunset pair and Moonrise/Moonset pair */}
-      <SunMoonRow label="Sunrise"  value={<TimeValue iso={sunMoonTimes.sunrise} date={date} />} noBorder />
-      <SunMoonRow label="Sunset"   value={<TimeValue iso={sunMoonTimes.sunset} date={date} />} />
-      <SunMoonRow label="Moonrise" value={<TimeValue iso={sunMoonTimes.moonrise} date={date} />} noBorder />
-      <SunMoonRow label="Moonset"  value={<TimeValue iso={sunMoonTimes.moonset} date={date} />} />
+      <SunMoonRow label="Sunrise"  value={formatTime(sunMoonTimes.sunrise)} noBorder />
+      <SunMoonRow label="Sunset"   value={formatTime(sunMoonTimes.sunset)} />
+      <SunMoonRow label="Moonrise" value={formatTime(sunMoonTimes.moonrise) || '—'} noBorder />
+      <SunMoonRow label="Moonset"  value={formatTime(sunMoonTimes.moonset) || '—'} />
 
       {/* Order: Tithi, Vara, Nakshatra, Yoga, Karana, Paksha */}
       <ElementRow
@@ -162,7 +158,6 @@ export default function BasicInfo({ data, date }: Props) {
         slots={tithiSlots}
         getValueInfo={name => TITHIS[name] ?? null}
         getValueBrief={name => TITHIS[name]?.idealFor}
-        date={date}
       />
 
       <ElementRow
@@ -171,7 +166,6 @@ export default function BasicInfo({ data, date }: Props) {
         slots={varaSlots}
         getValueInfo={name => VARAS[name] ?? null}
         getValueBrief={name => VARAS[name]?.idealFor}
-        date={date}
       />
 
       <ElementRow
@@ -186,7 +180,6 @@ export default function BasicInfo({ data, date }: Props) {
           const base = name.replace(/ \(P\d\)$/, '');
           return NAKSHATRAS[base]?.idealFor;
         }}
-        date={date}
       />
       <ElementRow
         label="Yoga"
@@ -194,7 +187,6 @@ export default function BasicInfo({ data, date }: Props) {
         slots={yogaSlots}
         getValueInfo={name => YOGAS[name] ?? null}
         getValueBrief={name => YOGAS[name]?.idealFor}
-        date={date}
       />
       <ElementRow
         label="Karana"
@@ -202,7 +194,6 @@ export default function BasicInfo({ data, date }: Props) {
         slots={karanaSlots}
         getValueInfo={name => KARANAS[name] ?? null}
         getValueBrief={name => KARANAS[name]?.idealFor}
-        date={date}
       />
 
       <ElementRow
@@ -211,7 +202,6 @@ export default function BasicInfo({ data, date }: Props) {
         slots={pakshaSlots}
         getValueInfo={name => PAKSHAS[name] ?? null}
         getValueBrief={name => PAKSHAS[name]?.idealFor}
-        date={date}
       />
 
       {/* Rashi & Nakshatra */}

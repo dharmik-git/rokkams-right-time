@@ -1,13 +1,12 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
 import ExpandSection from '@/components/ui/ExpandSection';
-import TimeValue from '@/components/ui/TimeValue';
+import { formatTime } from '@/lib/formatTime';
 import { MUHURTA_INFO } from '@/lib/data/descriptions';
 
 interface Interval { start: string; end: string; }
 
 interface Props {
-  date: string;
   muhurta: {
     rahuKalam: Interval;
     gulikaKalam: Interval;
@@ -31,7 +30,7 @@ const ORDER = [
   { key: 'bhadra',      label: 'Bhadra' },
 ];
 
-function BadRow({ infoKey, label, intervals, date }: { infoKey: string; label: string; intervals: Interval[]; date: string }) {
+function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string; intervals: Interval[] }) {
   const info = MUHURTA_INFO[infoKey];
   return (
     <div className="time-chip" style={{ alignItems: 'center', gap: '0.4rem' }}>
@@ -48,7 +47,7 @@ function BadRow({ infoKey, label, intervals, date }: { infoKey: string; label: s
             fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
             fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
           }}>
-            <TimeValue iso={iv.start} date={date} /> — <TimeValue iso={iv.end} date={date} />
+            {formatTime(iv.start)} — {formatTime(iv.end)}
           </span>
         ))}
       </div>
@@ -56,13 +55,13 @@ function BadRow({ infoKey, label, intervals, date }: { infoKey: string; label: s
   );
 }
 
-export default function InauspiciousTime({ muhurta, date }: Props) {
+export default function InauspiciousTime({ muhurta }: Props) {
   return (
     <ExpandSection title="Inauspicious Time" accentColor="var(--inauspicious-text)">
       {ORDER.map(({ key, label }) => {
         const raw = (muhurta as any)[key];
         const intervals: Interval[] = Array.isArray(raw) ? raw : [raw];
-        return <BadRow key={key} infoKey={key} label={label} intervals={intervals} date={date} />;
+        return <BadRow key={key} infoKey={key} label={label} intervals={intervals} />;
       })}
     </ExpandSection>
   );
