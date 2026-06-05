@@ -19,7 +19,7 @@ const crimsonText = Crimson_Text({
 
 export const metadata: Metadata = {
   title: "Rokkam's Right Time",
-  description: 'Daily Hindu Panchang for Muscat, Oman. Tithi, Nakshatra, Yoga, Karana, Vara, Muhurta times. Accurate auspicious and inauspicious timings.',
+  description: 'Daily Auspicious Timings - Muscat, Oman',
   keywords: ['panchang', 'muscat', 'oman', 'tithi', 'nakshatra', 'rahu kalam', 'muhurta', 'hindu calendar'],
 };
 
