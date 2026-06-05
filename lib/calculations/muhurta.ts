@@ -7,17 +7,8 @@ const GULIKA_PART = [7, 6, 5, 4, 3, 2, 1];
 // Yama Ganda part index by weekday
 const YAMA_GANDA_PART = [5, 4, 3, 2, 1, 7, 6];
 
-// Dur Muhurta positions (muhurta index 1-15) by weekday
-// Each entry = [first bad muhurta, second bad muhurta]
-const DUR_MUHURTA_POS: [number, number][] = [
-  [6, 10],  // Sun
-  [7, 15],  // Mon
-  [8, 12],  // Tue
-  [2, 11],  // Wed
-  [4, 13],  // Thu
-  [9, 12],  // Fri
-  [5, 8],   // Sat
-];
+// Dur Muhurta position (muhurta index 1-15) by weekday — calibrated against DrikPanchang
+const DUR_MUHURTA_POS = [14, 9, 4, 8, 6, 4, 1]; // Sun Mon Tue Wed Thu Fri Sat
 
 function getPart(sunrise: Date, sunset: Date, partIndex: number): TimeInterval {
   const dayMs = sunset.getTime() - sunrise.getTime();
@@ -68,16 +59,12 @@ export function calculateMuhurta(
   const gulikaKalam = getPart(sunrise, sunset, GULIKA_PART[dayOfWeek]);
   const yamaGanda = getPart(sunrise, sunset, YAMA_GANDA_PART[dayOfWeek]);
 
-  // Dur Muhurta: 2 positions per day based on weekday
-  const [d1, d2] = DUR_MUHURTA_POS[dayOfWeek];
+  // Dur Muhurta: 1 window per day, position calibrated against DrikPanchang
+  const d1 = DUR_MUHURTA_POS[dayOfWeek];
   const durMuhurta: TimeInterval[] = [
     {
       start: new Date(sunrise.getTime() + (d1 - 1) * muhurtaDurationMs),
       end: new Date(sunrise.getTime() + d1 * muhurtaDurationMs),
-    },
-    {
-      start: new Date(sunrise.getTime() + (d2 - 1) * muhurtaDurationMs),
-      end: new Date(sunrise.getTime() + d2 * muhurtaDurationMs),
     },
   ];
 
