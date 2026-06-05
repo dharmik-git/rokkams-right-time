@@ -65,8 +65,10 @@ export default function AuspiciousTime({ muhurta }: Props) {
         // null (e.g. Abhijit on Wednesday) or an empty array (e.g. Amrit Kalam
         // not observed that day) → show as not observed.
         if (raw === null || (Array.isArray(raw) && raw.length === 0)) {
+          const info = MUHURTA_INFO[key];
           return (
             <div key={key} className="time-chip" style={{ alignItems: 'center', gap: '0.4rem', opacity: 0.4 }}>
+              {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={null} />}
               <span style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)', fontWeight: 600, color: 'var(--moonsilver-dim)', letterSpacing: '0.04em', flex: 1, minWidth: 0 }}>{label}</span>
               <span style={{ fontSize: '0.78rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic', flexShrink: 0 }}>Not observed today</span>
             </div>
