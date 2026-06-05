@@ -285,12 +285,12 @@ export const NAKSHATRAS: Record<string, ElementInfo> = {
 
 export const YOGAS: Record<string, ElementInfo> = {
   Vishkambha: { description: 'Vishkambha — 1st Yoga, creates obstacles.', isAuspicious: false, reason: 'Creates obstacles.', idealFor: 'Avoid new work — obstructive quality' },
-  Preeti:     { description: 'Preeti — 2nd Yoga, brings love.', isAuspicious: true,  reason: 'Brings love and affection.', idealFor: 'Marriage, friendships, social activities' },
+  Priti:      { description: 'Priti — 2nd Yoga, brings love.', isAuspicious: true,  reason: 'Brings love and affection.', idealFor: 'Marriage, friendships, social activities' },
   Ayushman:   { description: 'Ayushman — 3rd Yoga, confers long life.', isAuspicious: true,  reason: 'Confers longevity and health.', idealFor: 'Health activities, new beginnings, all work' },
   Saubhagya:  { description: 'Saubhagya — 4th Yoga, brings good fortune.', isAuspicious: true,  reason: 'Brings prosperity and happiness.', idealFor: 'Wealth activities, all auspicious work' },
   Shobhana:   { description: 'Shobhana — 5th Yoga, brings splendor.', isAuspicious: true,  reason: 'Brings brightness and success.', idealFor: 'Arts, public appearance, creative work' },
   Atiganda:   { description: 'Atiganda — 6th Yoga, brings dangers.', isAuspicious: false, reason: 'Brings obstacles and dangers.', idealFor: 'Avoid — dangerous, obstacle-creating quality' },
-  Sukarma:    { description: 'Sukarma — 7th Yoga, favors good deeds.', isAuspicious: true,  reason: 'Favors virtuous and spiritual activities.', idealFor: 'Charity, spiritual work, righteous deeds' },
+  Sukarman:   { description: 'Sukarman — 7th Yoga, favors good deeds.', isAuspicious: true,  reason: 'Favors virtuous and spiritual activities.', idealFor: 'Charity, spiritual work, righteous deeds' },
   Dhriti:     { description: 'Dhriti — 8th Yoga, brings determination.', isAuspicious: true,  reason: 'Brings persistence and stability.', idealFor: 'Long-term projects, commitments, steady work' },
   Shula:      { description: 'Shula — 9th Yoga, brings pain.', isAuspicious: false, reason: 'Brings pain and conflicts.', idealFor: 'Avoid — painful, conflict-prone quality' },
   Ganda:      { description: 'Ganda — 10th Yoga, creates complications.', isAuspicious: false, reason: 'Creates legal issues and difficulties.', idealFor: 'Avoid important ventures — creates complications' },
@@ -309,7 +309,7 @@ export const YOGAS: Record<string, ElementInfo> = {
   Shubha:     { description: 'Shubha — 23rd Yoga, inherently auspicious.', isAuspicious: true,  reason: 'Brings positive outcomes for all activities.', idealFor: 'All auspicious ceremonies and activities' },
   Shukla:     { description: 'Shukla — 24th Yoga, brings purity.', isAuspicious: true,  reason: 'Brings clarity and purity.', idealFor: 'Purification, spiritual work, clear decisions' },
   Brahma:     { description: 'Brahma — 25th Yoga, brings creative energy.', isAuspicious: true,  reason: 'Brings creative and divine inspiration.', idealFor: 'Creative work, education, new beginnings' },
-  Indra:      { description: 'Indra — 26th Yoga, brings power.', isAuspicious: true,  reason: 'Brings authority and royal favor.', idealFor: 'Leadership, governance, high-position activities' },
+  Mahendra:   { description: 'Mahendra — 26th Yoga, brings power.', isAuspicious: true,  reason: 'Brings authority and royal favor.', idealFor: 'Leadership, governance, high-position activities' },
   Vaidhriti:  { description: 'Vaidhriti — 27th Yoga, inauspicious.', isAuspicious: false, reason: 'Brings lack of support.', idealFor: 'Avoid important activities — unsupported quality' },
 };
 
