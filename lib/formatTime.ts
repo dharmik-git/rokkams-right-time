@@ -10,12 +10,6 @@ export function formatTime(iso: string | null | undefined): string {
   });
 }
 
-function dateDiffDays(from: string, to: string): number {
-  const a = new Date(from + 'T00:00:00');
-  const b = new Date(to + 'T00:00:00');
-  return Math.round((b.getTime() - a.getTime()) / 86400000);
-}
-
 export function formatTimeWithDate(iso: string | null | undefined, pageDate: string): string {
   if (!iso) return '—';
   const timeStr = new Date(iso).toLocaleTimeString('en-GB', {
@@ -24,8 +18,11 @@ export function formatTimeWithDate(iso: string | null | undefined, pageDate: str
     hour12: false,
     timeZone: MUSCAT_TZ,
   });
+  // Date (in Muscat tz) on which this time actually falls
   const muscatDate = new Intl.DateTimeFormat('en-CA', { timeZone: MUSCAT_TZ }).format(new Date(iso));
-  if (Math.abs(dateDiffDays(pageDate, muscatDate)) <= 1) return timeStr;
+  // Same day as the page being viewed → no label needed
+  if (muscatDate === pageDate) return timeStr;
+  // Any other day → show the date in brackets so it's clear it's not today
   const [, m, d] = muscatDate.split('-').map(Number);
   return `${timeStr} [${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}]`;
 }
