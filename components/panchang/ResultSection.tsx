@@ -108,12 +108,27 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
 
   return (
     <div style={{ fontSize: '0.78rem', lineHeight: 1.6 }}>
-      {/* Rank at the top */}
-      <div style={{ marginBottom: '0.4rem' }}>
+      {/* Rank + total score */}
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: '0.4rem' }}>
         <span style={{ color: 'var(--gold)', fontFamily: 'Cinzel, serif', fontSize: '1rem', fontWeight: 700 }}>
           #{rank}
         </span>
+        <span style={{ color: 'var(--moonsilver)', fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 600 }}>
+          Score: <span style={{ color: 'var(--gold-light)' }}>{slot.finalScore}</span>
+        </span>
       </div>
+
+      {/* Multiplier row (only if one is active) */}
+      {slot.multiplierLabel && (
+        <div style={{ marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+          <span style={{ color: 'var(--auspicious-text)', fontFamily: 'Cinzel, serif', fontSize: '0.68rem' }}>
+            ✦ {slot.multiplierLabel}
+          </span>
+          <span style={{ color: 'var(--moonsilver-dim)', fontSize: '0.68rem' }}>
+            ×{slot.multiplier.toFixed(2)}
+          </span>
+        </div>
+      )}
 
       <div style={{ borderTop: '1px solid var(--night-border)', marginBottom: '0.35rem' }} />
 
