@@ -195,7 +195,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
         color: 'var(--moonsilver-dim)', letterSpacing: '0.1em', textTransform: 'uppercase',
         marginBottom: '0.5rem',
       }}>
-        Top 5 Times for Business / Finance / Contracts
+        for Business / Finance / Contracts
       </p>
 
       {slots.length === 0 ? (
