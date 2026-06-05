@@ -134,19 +134,19 @@ const VISHA_START_NADI: number[][] = [
   [24, 30],     // Punarvasu
   [20],         // Pushya
   [32],         // Ashlesha
-  [30, 48],     // Magha
+  [30],         // Magha
   [20],         // Purva Phalguni
   [18],         // Uttara Phalguni
   [21],         // Hasta
   [20],         // Chitra
   [14],         // Swati
-  [14, 40, 48], // Vishakha
+  [14, 40],     // Vishakha
   [10],         // Anuradha
   [14],         // Jyeshtha
   [20, 56],     // Mula
   [5, 24],      // Purva Ashadha
   [20],         // Uttara Ashadha
-  [10, 24],     // Shravana
+  [10],         // Shravana
   [10],         // Dhanishtha
   [18],         // Shatabhisha
   [16],         // Purva Bhadrapada

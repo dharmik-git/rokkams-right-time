@@ -7,8 +7,17 @@ const GULIKA_PART = [7, 6, 5, 4, 3, 2, 1];
 // Yama Ganda part index by weekday
 const YAMA_GANDA_PART = [5, 4, 3, 2, 1, 7, 6];
 
-// Dur Muhurta position (muhurta index 1-15) by weekday — calibrated against DrikPanchang
-const DUR_MUHURTA_POS = [14, 9, 4, 8, 6, 4, 1]; // Sun Mon Tue Wed Thu Fri Sat
+// Dur Muhurta positions (muhurta index 1-15) by weekday — calibrated against DrikPanchang.
+// Friday has two windows; all other days have one.
+const DUR_MUHURTA_POS: number[][] = [
+  [14],    // Sun
+  [9],     // Mon
+  [4],     // Tue
+  [8],     // Wed
+  [6],     // Thu
+  [4, 9],  // Fri
+  [1],     // Sat
+];
 
 function getPart(sunrise: Date, sunset: Date, partIndex: number): TimeInterval {
   const dayMs = sunset.getTime() - sunrise.getTime();
@@ -59,14 +68,11 @@ export function calculateMuhurta(
   const gulikaKalam = getPart(sunrise, sunset, GULIKA_PART[dayOfWeek]);
   const yamaGanda = getPart(sunrise, sunset, YAMA_GANDA_PART[dayOfWeek]);
 
-  // Dur Muhurta: 1 window per day, position calibrated against DrikPanchang
-  const d1 = DUR_MUHURTA_POS[dayOfWeek];
-  const durMuhurta: TimeInterval[] = [
-    {
-      start: new Date(sunrise.getTime() + (d1 - 1) * muhurtaDurationMs),
-      end: new Date(sunrise.getTime() + d1 * muhurtaDurationMs),
-    },
-  ];
+  // Dur Muhurta: 1 window most days, 2 on Fridays — positions calibrated against DrikPanchang
+  const durMuhurta: TimeInterval[] = DUR_MUHURTA_POS[dayOfWeek].map(d1 => ({
+    start: new Date(sunrise.getTime() + (d1 - 1) * muhurtaDurationMs),
+    end:   new Date(sunrise.getTime() + d1 * muhurtaDurationMs),
+  }));
 
   // Varjyam: computed nakshatra-based in the API route via computeVarjyam()
   const varjyam: TimeInterval[] = [];
