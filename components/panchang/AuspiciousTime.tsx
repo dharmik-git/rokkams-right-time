@@ -62,8 +62,9 @@ export default function AuspiciousTime({ muhurta }: Props) {
     <ExpandSection title="Auspicious Time" accentColor="var(--auspicious-text)">
       {ORDER.map(({ key, label }) => {
         const raw = (muhurta as any)[key];
-        if (raw === null) {
-          // e.g. Abhijit on Wednesday
+        // null (e.g. Abhijit on Wednesday) or an empty array (e.g. Amrit Kalam
+        // not observed that day) → show as not observed.
+        if (raw === null || (Array.isArray(raw) && raw.length === 0)) {
           return (
             <div key={key} className="time-chip" style={{ alignItems: 'center', gap: '0.4rem', opacity: 0.4 }}>
               <span style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)', fontWeight: 600, color: 'var(--moonsilver-dim)', letterSpacing: '0.04em', flex: 1, minWidth: 0 }}>{label}</span>

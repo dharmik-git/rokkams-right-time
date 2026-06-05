@@ -89,7 +89,7 @@ export default function NonOverlappingTime({ muhurta }: Props) {
     <ExpandSection title="Non-Overlapped Auspicious Times" accentColor="var(--auspicious-text)">
       {AUSPICIOUS_ORDER.map(({ key, label }) => {
         const raw = muhurta[key];
-        if (raw === null) {
+        if (raw === null || (Array.isArray(raw) && raw.length === 0)) {
           const info = MUHURTA_INFO[key];
           return (
             <div key={key} className="time-chip" style={{ alignItems: 'center', gap: '0.4rem', flexWrap: 'nowrap' }}>

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { computePanchang } from '@/lib/calculations/panchang';
 import { calculateMuhurta } from '@/lib/calculations/muhurta';
 import { computeTransitions } from '@/lib/calculations/transitions';
+import { computeAmritKalam } from '@/lib/calculations/nakshatraMuhurta';
 import { MUSCAT } from '@/lib/muscat';
 
 function getUTCOffsetMinutes(date: Date, timezone: string): number {
@@ -100,6 +101,13 @@ export async function POST(req: NextRequest) {
     const sunset = data.sunMoonTimes.sunset;
     const solarNoon = data.sunMoonTimes.solarNoon;
     const muhurta = calculateMuhurta(sunrise, sunset, solarNoon, date.getDay(), prevSunset ?? undefined);
+
+    // Amrit Kalam: nakshatra-based (DrikPanchang method), spanning this
+    // panchang day from sunrise to next sunrise. May be empty (not observed).
+    const tomorrow = new Date(date.getTime() + 86400000);
+    const nextData = computePanchang(tomorrow, MUSCAT);
+    const nextSunrise = nextData.sunMoonTimes.sunrise;
+    muhurta.amritKalam = computeAmritKalam(sunrise, nextSunrise);
 
     // Compute element transition times for the full Muscat calendar day (midnight → midnight)
     const offsetMin = getUTCOffsetMinutes(date, MUSCAT.timezone);
