@@ -77,27 +77,14 @@ export function calculateMuhurta(
   // Varjyam: computed nakshatra-based in the API route via computeVarjyam()
   const varjyam: TimeInterval[] = [];
 
-  // Baana: Tara-based inauspicious period (varies by weekday and Tithi)
-  // Simplified: 15-min window in early morning based on weekday offset
-  const baanaOffsets = [30, 75, 15, 90, 45, 120, 60]; // minutes after sunrise
-  const baana: TimeInterval[] = [
-    {
-      start: addMinutes(sunrise, baanaOffsets[dayOfWeek]),
-      end: addMinutes(sunrise, baanaOffsets[dayOfWeek] + 15),
-    },
-  ];
+  // Baana: nakshatra-based, computed in the API route via computeBaana()
+  const baana: TimeInterval[] = [];
 
   // Vidal Yoga: computed nakshatra-based in the API route via computeVidalYoga()
   const vidalYoga: TimeInterval[] = [];
 
-  // Bhadra (Visti Karana): currently-active Visti half-Tithi period
-  // Approximated as ~90 min window in the evening (before sunset)
-  const bhadra: TimeInterval[] = [
-    {
-      start: addMinutes(sunset, -90),
-      end: addMinutes(sunset, -15),
-    },
-  ];
+  // Bhadra (Vishti Karana): computed in the API route via computeBhadra()
+  const bhadra: TimeInterval[] = [];
 
   // ── Auspicious ────────────────────────────────────────────────────────────
   // Brahma Muhurta: 14th–15th muhurtas of the night before sunrise

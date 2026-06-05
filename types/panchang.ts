@@ -46,6 +46,7 @@ export interface VaraResult {
 export interface TimeInterval {
   start: Date;
   end: Date;
+  label?: string;
 }
 
 export interface SunMoonTimes {

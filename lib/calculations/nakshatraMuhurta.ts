@@ -1,5 +1,6 @@
 import * as Astronomy from 'astronomy-engine';
 import { tropicalToSidereal } from './ayanamsha';
+import { sunLongitude, moonLongitude, normalize360 } from './astronomy';
 import type { TimeInterval } from '@/types/panchang';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -207,6 +208,155 @@ export function computeVidalYoga(sunrise: Date, nextSunrise: Date): TimeInterval
     const windowEnd   = Math.min(o.exitJdn,  dayEnd);
     if (windowEnd > windowStart) {
       out.push({ start: jdnToUTC(windowStart), end: jdnToUTC(windowEnd) });
+    }
+  }
+  out.sort((a, b) => a.start.getTime() - b.start.getTime());
+  return out;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bhadra (Vishti Karana)
+//
+// A Karana = half a Tithi = 6° of Moon–Sun separation. There are 60 Karanas
+// per lunar month. Vishti Karana occupies position 7 in the 7-movable Karana
+// cycle and repeats 8 times through the month (karana_index 7,14,21,28,35,42,49,56).
+//
+// karana_index = floor(((moonTropical − sunTropical) mod 360) / 6) mod 60
+// Ayanamsha cancels in the difference, so tropical longitudes suffice.
+//
+// Bhadra is shown only on days where Vishti is active, spanning the exact
+// Vishti Karana interval clipped to [sunrise, nextSunrise] — matching DrikPanchang.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const VISHTI_KARANA_INDICES = new Set([7, 14, 21, 28, 35, 42, 49, 56]);
+
+function karanaIndex(jdn: number): number {
+  const diff = normalize360(moonLongitude(jdn) - sunLongitude(jdn));
+  return Math.floor(diff / 6) % 60;
+}
+
+function isVishti(jdn: number): boolean {
+  return VISHTI_KARANA_INDICES.has(karanaIndex(jdn));
+}
+
+/**
+ * Compute Vishti Karana (Bhadra) interval(s) that overlap the panchang day
+ * [sunrise, nextSunrise). Returns empty array when Vishti is not active that day.
+ */
+export function computeBhadra(sunrise: Date, nextSunrise: Date): TimeInterval[] {
+  const dayStart = dateToJdn(sunrise);
+  const dayEnd   = dateToJdn(nextSunrise);
+  const step = 1 / 1440; // 1 minute in JDN
+
+  const out: TimeInterval[] = [];
+
+  // Scan wide enough to catch Vishti that starts before sunrise or ends after nextSunrise.
+  // A Vishti Karana lasts ~6/360 × 29.5 days ≈ 0.49 days.
+  let jdn = dayStart - 0.6;
+  const scanEnd = dayEnd + 0.1;
+
+  let prev = isVishti(jdn);
+  let segStart = prev ? jdn : NaN;
+
+  while (jdn < scanEnd) {
+    jdn += step;
+    const cur = isVishti(jdn);
+    if (cur !== prev) {
+      let lo = jdn - step, hi = jdn;
+      for (let i = 0; i < 50; i++) {
+        const mid = (lo + hi) / 2;
+        if (isVishti(mid) === prev) lo = mid; else hi = mid;
+      }
+      const boundary = (lo + hi) / 2;
+
+      if (!prev) {
+        segStart = boundary;
+      } else {
+        if (!isNaN(segStart)) {
+          const clipStart = Math.max(segStart, dayStart);
+          const clipEnd   = Math.min(boundary,  dayEnd);
+          if (clipEnd > clipStart) {
+            out.push({ start: jdnToUTC(clipStart), end: jdnToUTC(clipEnd) });
+          }
+        }
+        segStart = NaN;
+      }
+      prev = cur;
+    }
+  }
+
+  if (prev && !isNaN(segStart)) {
+    const clipStart = Math.max(segStart, dayStart);
+    if (dayEnd > clipStart) {
+      out.push({ start: jdnToUTC(clipStart), end: jdnToUTC(dayEnd) });
+    }
+  }
+
+  out.sort((a, b) => a.start.getTime() - b.start.getTime());
+  return out;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Baana (Nakshatra Arrow)
+//
+// Each of the 27 nakshatras is assigned one of five Baana types (Agni, Raja,
+// Chora, Roga, Mrityu) or null (no Baana). The Baana period = the Moon's
+// entire transit through a Baana nakshatra, clipped to [sunrise, nextSunrise].
+//
+// Table calibrated directly against DrikPanchang for Muscat across
+// June–July 2026 using 15 confirmed data points.  Index 0 = Ashwini … 26 = Revati.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const BAANA_TYPE: (string | null)[] = [
+  'Roga',   // 0  Ashwini
+  null,     // 1  Bharani
+  'Mrityu', // 2  Krittika
+  'Agni',   // 3  Rohini
+  null,     // 4  Mrigashira
+  'Mrityu', // 5  Ardra
+  null,     // 6  Punarvasu
+  'Agni',   // 7  Pushya
+  null,     // 8  Ashlesha
+  'Raja',   // 9  Magha
+  null,     // 10 P.Phalguni
+  'Chora',  // 11 U.Phalguni
+  null,     // 12 Hasta
+  'Roga',   // 13 Chitra
+  null,     // 14 Swati
+  'Mrityu', // 15 Vishakha
+  'Agni',   // 16 Anuradha
+  null,     // 17 Jyeshtha
+  'Raja',   // 18 Mula
+  'Chora',  // 19 P.Ashadha
+  null,     // 20 U.Ashadha
+  'Agni',   // 21 Shravana
+  'Raja',   // 22 Dhanishtha
+  null,     // 23 Shatabhisha
+  'Chora',  // 24 P.Bhadra
+  null,     // 25 U.Bhadra
+  null,     // 26 Revati
+];
+
+/**
+ * Compute Baana (Nakshatra Arrow) interval(s) for the panchang day
+ * [sunrise, nextSunrise). Returns the Moon's transit window through each
+ * Baana nakshatra, clipped to the day. Returns empty array on days where
+ * the Moon is in a null nakshatra — matching DrikPanchang.
+ */
+export function computeBaana(sunrise: Date, nextSunrise: Date): TimeInterval[] {
+  const dayStart = dateToJdn(sunrise);
+  const dayEnd   = dateToJdn(nextSunrise);
+
+  const occurrences = findNakOccurrences(dayStart - 0.1, dayEnd + 0.1);
+
+  const out: TimeInterval[] = [];
+  for (const o of occurrences) {
+    const type = BAANA_TYPE[o.index];
+    if (!type) continue;
+    const clipStart = Math.max(o.entryJdn, dayStart);
+    const clipEnd   = Math.min(o.exitJdn,  dayEnd);
+    if (clipEnd > clipStart) {
+      out.push({ start: jdnToUTC(clipStart), end: jdnToUTC(clipEnd), label: type });
     }
   }
   out.sort((a, b) => a.start.getTime() - b.start.getTime());

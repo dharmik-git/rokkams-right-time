@@ -3,6 +3,7 @@ import { computePanchang } from '@/lib/calculations/panchang';
 import { calculateMuhurta } from '@/lib/calculations/muhurta';
 import { computeTransitions } from '@/lib/calculations/transitions';
 import { computeAmritKalam, computeVidalYoga, computeVarjyam } from '@/lib/calculations/nakshatraMuhurta';
+import { fetchDrikBaanaAndBhadra } from '@/lib/drikpanchang';
 import { MUSCAT } from '@/lib/muscat';
 
 function getUTCOffsetMinutes(date: Date, timezone: string): number {
@@ -31,8 +32,8 @@ function roundMin(d: Date | null | undefined): string | null {
   return rounded.toISOString();
 }
 
-function serializeInterval(iv: { start: Date; end: Date }) {
-  return { start: roundMin(iv.start)!, end: roundMin(iv.end)! };
+function serializeInterval(iv: { start: Date; end: Date; label?: string }) {
+  return { start: roundMin(iv.start)!, end: roundMin(iv.end)!, label: iv.label };
 }
 
 function serializeMuhurta(m: ReturnType<typeof computePanchang>['muhurta']) {
@@ -110,6 +111,11 @@ export async function POST(req: NextRequest) {
     muhurta.amritKalam = computeAmritKalam(sunrise, nextSunrise);
     muhurta.vidalYoga  = computeVidalYoga(sunrise, nextSunrise);
     muhurta.varjyam    = computeVarjyam(sunrise, nextSunrise);
+
+    // Baana and Bhadra fetched live from DrikPanchang (Muscat)
+    const drik = await fetchDrikBaanaAndBhadra(sunrise, nextSunrise);
+    muhurta.baana  = drik.baana;
+    muhurta.bhadra = drik.bhadra;
 
     // Compute element transition times for the full Muscat calendar day (midnight → midnight)
     const offsetMin = getUTCOffsetMinutes(date, MUSCAT.timezone);

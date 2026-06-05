@@ -4,7 +4,7 @@ import ExpandSection from '@/components/ui/ExpandSection';
 import { formatTime } from '@/lib/formatTime';
 import { MUHURTA_INFO } from '@/lib/data/descriptions';
 
-interface Interval { start: string; end: string; }
+interface Interval { start: string; end: string; label?: string; }
 
 interface Props {
   muhurta: {
@@ -47,7 +47,7 @@ function BadRow({ infoKey, label, intervals }: { infoKey: string; label: string;
             fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
             fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
           }}>
-            {formatTime(iv.start)} — {formatTime(iv.end)}
+            {iv.label ? `${iv.label}: ` : ''}{formatTime(iv.start)} — {formatTime(iv.end)}
           </span>
         ))}
       </div>
