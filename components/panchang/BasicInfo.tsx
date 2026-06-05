@@ -1,7 +1,7 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTimeWithDate } from '@/lib/formatTime';
+import TimeValue from '@/components/ui/TimeValue';
 import { ELEMENT_TYPES, TITHIS, NAKSHATRAS, YOGAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
 
 interface Props { data: any; date: string; }
@@ -15,10 +15,14 @@ interface Slot {
   end: string | null;
 }
 
-function formatSlotTime(start: string | null, end: string | null, date: string): string {
-  const s = start ? formatTimeWithDate(start, date) : '00:00';
-  const e = end   ? formatTimeWithDate(end, date)   : '23:59';
-  return `${s} – ${e}`;
+function SlotTiming({ start, end, date }: { start: string | null; end: string | null; date: string }) {
+  return (
+    <>
+      {start ? <TimeValue iso={start} date={date} /> : '00:00'}
+      {' – '}
+      {end ? <TimeValue iso={end} date={date} /> : '23:59'}
+    </>
+  );
 }
 
 function nameColor(isAuspicious: boolean | null | undefined): string | undefined {
@@ -58,7 +62,6 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, da
         const displayName = slot.paksha ? `${slot.paksha} ${slot.name}` : slot.name;
         const vi = getValueInfo(slot.name);
         const brief = getValueBrief(slot.name);
-        const timing = formatSlotTime(slot.start, slot.end, date);
         const color = nameColor(vi?.isAuspicious);
         return (
           <div key={i} style={{
@@ -94,7 +97,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, da
               whiteSpace: 'nowrap',
               textAlign: 'right',
             }}>
-              {timing}
+              <SlotTiming start={slot.start} end={slot.end} date={date} />
             </span>
           </div>
         );
@@ -103,7 +106,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, da
   );
 }
 
-function SunMoonRow({ label, value, noBorder }: { label: string; value: string; noBorder?: boolean }) {
+function SunMoonRow({ label, value, noBorder }: { label: string; value: React.ReactNode; noBorder?: boolean }) {
   return (
     <div className="info-row" style={noBorder ? { borderBottom: 'none' } : undefined}>
       <div className="info-label">{label}</div>
@@ -147,10 +150,10 @@ export default function BasicInfo({ data, date }: Props) {
   return (
     <ExpandSection title="Basic Info" defaultOpen={false}>
       {/* Sun & Moon — no heading; no border between Sunrise/Sunset pair and Moonrise/Moonset pair */}
-      <SunMoonRow label="Sunrise"  value={formatTimeWithDate(sunMoonTimes.sunrise, date)} noBorder />
-      <SunMoonRow label="Sunset"   value={formatTimeWithDate(sunMoonTimes.sunset, date)} />
-      <SunMoonRow label="Moonrise" value={formatTimeWithDate(sunMoonTimes.moonrise, date) || '—'} noBorder />
-      <SunMoonRow label="Moonset"  value={formatTimeWithDate(sunMoonTimes.moonset, date) || '—'} />
+      <SunMoonRow label="Sunrise"  value={<TimeValue iso={sunMoonTimes.sunrise} date={date} />} noBorder />
+      <SunMoonRow label="Sunset"   value={<TimeValue iso={sunMoonTimes.sunset} date={date} />} />
+      <SunMoonRow label="Moonrise" value={<TimeValue iso={sunMoonTimes.moonrise} date={date} />} noBorder />
+      <SunMoonRow label="Moonset"  value={<TimeValue iso={sunMoonTimes.moonset} date={date} />} />
 
       {/* Order: Tithi, Vara, Nakshatra, Yoga, Karana, Paksha */}
       <ElementRow

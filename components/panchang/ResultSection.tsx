@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ExpandSection from '@/components/ui/ExpandSection';
 import InfoDot from '@/components/ui/InfoDot';
-import { formatTimeWithDate } from '@/lib/formatTime';
+import TimeValue from '@/components/ui/TimeValue';
 import { computeBusinessSlots, type BusinessSlot } from '@/lib/businessMuhurta';
 import type { DayTransitions } from '@/lib/calculations/transitions';
 
@@ -221,7 +221,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha, date
                 {i + 1}
               </span>
 
-              <span className="time-range">{formatTimeWithDate(startIso, date)} — {formatTimeWithDate(endIso, date)}</span>
+              <span className="time-range"><TimeValue iso={startIso} date={date} /> — <TimeValue iso={endIso} date={date} /></span>
 
               <StarDisplay count={slot.starCount} size="1rem" />
             </div>

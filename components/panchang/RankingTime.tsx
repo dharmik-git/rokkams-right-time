@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTimeWithDate } from '@/lib/formatTime';
+import TimeValue from '@/components/ui/TimeValue';
 import { TITHIS, YOGAS, NAKSHATRAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
 import { computeRankedSlots } from '@/lib/rankedSlots';
 
@@ -130,7 +130,7 @@ export default function RankingTime({ muhurta, panchangData, date }: Props) {
               </span>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span className="time-range">{formatTimeWithDate(startIso, date)} — {formatTimeWithDate(endIso, date)}</span>
+                  <span className="time-range"><TimeValue iso={startIso} date={date} /> — <TimeValue iso={endIso} date={date} /></span>
                   <span
                     onClick={e => openPopup(e, 'stars', i)}
                     onTouchEnd={e => openPopup(e as any, 'stars', i)}

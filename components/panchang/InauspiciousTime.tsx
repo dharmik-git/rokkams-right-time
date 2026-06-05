@@ -1,7 +1,7 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTimeWithDate } from '@/lib/formatTime';
+import TimeValue from '@/components/ui/TimeValue';
 import { MUHURTA_INFO } from '@/lib/data/descriptions';
 
 interface Interval { start: string; end: string; }
@@ -48,7 +48,7 @@ function BadRow({ infoKey, label, intervals, date }: { infoKey: string; label: s
             fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
             fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
           }}>
-            {formatTimeWithDate(iv.start, date)} — {formatTimeWithDate(iv.end, date)}
+            <TimeValue iso={iv.start} date={date} /> — <TimeValue iso={iv.end} date={date} />
           </span>
         ))}
       </div>
