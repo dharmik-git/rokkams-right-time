@@ -214,7 +214,7 @@ export function computeBusinessSlots(
     const ts = tithiScore(tSlot.name, tSlot.paksha);
     const ys = YOGA_SCORES[ySlot.name] ?? 60;
     const ks = KARANA_SCORES[kSlot.name] ?? 60;
-    const baseScore = ns * 0.35 + ts * 0.25 + varaScoreVal * 0.10 + ys * 0.10 + ks * 0.10 + pakshaScoreVal * 0.10;
+    const baseScore = ns * 0.35 + ts * 0.25 + ys * 0.15 + ks * 0.10 + pakshaScoreVal * 0.10 + varaScoreVal * 0.05;
 
     // Step 4: auspicious multiplier (highest wins)
     let multiplier = 1.0;
