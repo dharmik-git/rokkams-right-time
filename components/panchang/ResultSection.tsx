@@ -98,12 +98,12 @@ function StarLegend() {
 // ── Popup content ─────────────────────────────────────────────────────────────
 function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
   const rows: { label: string; value: string; score: number }[] = [
-    { label: 'Tithi',     value: slot.tithiName,     score: slot.tithiScore },
-    { label: 'Vara',      value: slot.varaName,       score: slot.varaScore },
     { label: 'Nakshatra', value: slot.nakshatraName,  score: slot.nakshatraScore },
+    { label: 'Tithi',     value: slot.tithiName,      score: slot.tithiScore },
     { label: 'Yoga',      value: slot.yogaName,       score: slot.yogaScore },
     { label: 'Karana',    value: slot.karanaName,     score: slot.karanaScore },
     { label: 'Paksha',    value: slot.paksha,         score: slot.pakshaScore },
+    { label: 'Vara',      value: slot.varaName,       score: slot.varaScore },
   ];
 
   return (
