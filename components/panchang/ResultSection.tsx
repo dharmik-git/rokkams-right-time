@@ -160,6 +160,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
 
   const [popup, setPopup] = useState<{ index: number; pos: { top: number; left: number } } | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setMounted(true); }, []);
@@ -227,29 +228,54 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
           No qualifying muhurta windows today.
         </p>
       ) : (
-        slots.map((slot, i) => {
-          const startIso = new Date(slot.start).toISOString();
-          const endIso   = new Date(slot.end).toISOString();
-          return (
-            <div key={i} className="time-chip" style={{ alignItems: 'center', gap: '0.6rem' }}>
-              <span
-                className={`rank-badge ${rankClass(i)}`}
-                onClick={e => openPopup(e, i)}
-                onTouchEnd={e => openPopup(e as any, i)}
-                role="button"
-                tabIndex={0}
-                style={{ cursor: 'pointer', flexShrink: 0 }}
-                onKeyDown={e => e.key === 'Enter' && openPopup(e as any, i)}
-              >
-                {i + 1}
-              </span>
+        <>
+          {(showAll ? slots : slots.slice(0, 5)).map((slot, i) => {
+            const startIso = new Date(slot.start).toISOString();
+            const endIso   = new Date(slot.end).toISOString();
+            return (
+              <div key={i} className="time-chip" style={{ alignItems: 'center', gap: '0.6rem' }}>
+                <span
+                  className={`rank-badge ${rankClass(i)}`}
+                  onClick={e => openPopup(e, i)}
+                  onTouchEnd={e => openPopup(e as any, i)}
+                  role="button"
+                  tabIndex={0}
+                  style={{ cursor: 'pointer', flexShrink: 0 }}
+                  onKeyDown={e => e.key === 'Enter' && openPopup(e as any, i)}
+                >
+                  {i + 1}
+                </span>
 
-              <span className="time-range">{formatTime(startIso)} — {formatTime(endIso)}</span>
+                <span className="time-range">{formatTime(startIso)} — {formatTime(endIso)}</span>
 
-              <StarDisplay count={slot.starCount} size="1rem" />
-            </div>
-          );
-        })
+                <StarDisplay count={slot.starCount} size="1rem" />
+              </div>
+            );
+          })}
+
+          {slots.length > 5 && (
+            <button
+              onClick={() => setShowAll(v => !v)}
+              style={{
+                marginTop: '0.4rem',
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'var(--moonsilver-dim)',
+                fontFamily: 'Cinzel, serif',
+                fontSize: '0.68rem',
+                letterSpacing: '0.08em',
+                padding: '0.2rem 0',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+              }}
+            >
+              <span style={{ transform: showAll ? 'rotate(180deg)' : 'none', display: 'inline-block', transition: 'transform 0.2s' }}>▾</span>
+              {showAll ? 'Show less' : `Show ${slots.length - 5} more`}
+            </button>
+          )}
+        </>
       )}
 
       {mounted && popup && createPortal(

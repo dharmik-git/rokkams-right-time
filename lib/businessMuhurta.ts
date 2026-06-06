@@ -298,7 +298,7 @@ export function computeBusinessSlots(
       if (bP !== aP) return bP - aP;
       return (b.end - b.start) - (a.end - a.start);
     })
-    .slice(0, 5);
+    ;
 }
 
 export function getExcludedPeriods(muhurta: Record<string, any>): ExcludedPeriod[] {
