@@ -125,7 +125,7 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
             ✦ {slot.multiplierLabel}
           </span>
           <span style={{ color: 'var(--moonsilver-dim)', fontSize: '0.68rem' }}>
-            ×{slot.multiplier.toFixed(2)}
+            {slot.multiplier.toFixed(2)}×
           </span>
         </div>
       )}
@@ -141,6 +141,12 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
           <StarDisplay count={elementStarCount(r.score)} size="0.7rem" />
         </div>
       ))}
+
+      <div style={{ borderTop: '1px solid var(--night-border)', marginTop: '0.35rem', paddingTop: '0.28rem' }}>
+        <span style={{ color: 'var(--moonsilver-dim)', fontFamily: 'Cinzel, serif', fontSize: '0.68rem' }}>
+          (<span style={{ color: 'var(--gold-light)', fontWeight: 600 }}>{slot.finalScore}</span>){'  '}base: {slot.baseScore}
+        </span>
+      </div>
     </div>
   );
 }
