@@ -125,7 +125,7 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
             ✦ {slot.multiplierLabel}
           </span>
           <span style={{ color: 'var(--moonsilver-dim)', fontSize: '0.68rem' }}>
-            {slot.multiplier.toFixed(2)}×
+            {slot.multiplier.toFixed(2)}X
           </span>
         </div>
       )}
