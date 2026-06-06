@@ -134,7 +134,7 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
 
       {rows.map(r => (
         <div key={r.label} style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', marginBottom: '0.1rem' }}>
-          <span style={{ color: 'var(--moonsilver-dim)', fontFamily: 'Cinzel, serif', fontSize: '0.68rem', minWidth: 60 }}>
+          <span style={{ color: 'var(--moonsilver-dim)', fontFamily: 'Cinzel, serif', fontSize: '0.68rem', width: 72, flexShrink: 0 }}>
             {r.label}
           </span>
           <span style={{ color: 'var(--moonsilver)', flex: 1 }}>{r.value}</span>
