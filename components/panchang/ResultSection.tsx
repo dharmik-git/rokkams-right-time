@@ -144,10 +144,10 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
 
       <div style={{ borderTop: '1px solid var(--night-border)', marginTop: '0.35rem', paddingTop: '0.28rem', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <span style={{ color: 'var(--moonsilver-dim)', fontFamily: 'Cinzel, serif', fontSize: '0.68rem' }}>
-          Total Score ({slot.baseScore}) :
+          Total Score ({slot.finalScore}) :
         </span>
         <span style={{ color: 'var(--gold-light)', fontFamily: 'Cinzel, serif', fontSize: '0.78rem', fontWeight: 600 }}>
-          {slot.finalScore}
+          {slot.baseScore}
         </span>
       </div>
     </div>
