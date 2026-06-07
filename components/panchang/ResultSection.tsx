@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ExpandSection from '@/components/ui/ExpandSection';
 import InfoDot from '@/components/ui/InfoDot';
+import DateTag from '@/components/ui/DateTag';
 import { formatTime } from '@/lib/formatTime';
 import { computeBusinessSlots, type BusinessSlot } from '@/lib/businessMuhurta';
 import type { DayTransitions } from '@/lib/calculations/transitions';
@@ -15,6 +16,7 @@ interface Props {
   transitions: DayTransitions;
   vara: { index: number; name: string; shortName: string };
   paksha: 'Shukla' | 'Krishna';
+  pageDate: string;
 }
 
 // ── Star SVG components ───────────────────────────────────────────────────────
@@ -155,7 +157,7 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function ResultSection({ muhurta, transitions, vara, paksha }: Props) {
+export default function ResultSection({ muhurta, transitions, vara, paksha, pageDate }: Props) {
   const slots = computeBusinessSlots(transitions, muhurta, vara.index, paksha);
 
   const [popup, setPopup] = useState<{ index: number; pos: { top: number; left: number } } | null>(null);
@@ -246,7 +248,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha }: Pr
                   {i + 1}
                 </span>
 
-                <span className="time-range">{formatTime(startIso)} — {formatTime(endIso)}</span>
+                <span className="time-range"><DateTag iso={startIso} pageDate={pageDate} />{formatTime(startIso)} — <DateTag iso={endIso} pageDate={pageDate} />{formatTime(endIso)}</span>
 
                 <StarDisplay count={slot.starCount} size="1rem" />
               </div>

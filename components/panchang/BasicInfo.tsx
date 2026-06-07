@@ -1,10 +1,11 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
+import DateTag from '@/components/ui/DateTag';
 import ExpandSection from '@/components/ui/ExpandSection';
 import { formatTime } from '@/lib/formatTime';
 import { ELEMENT_TYPES, TITHIS, NAKSHATRAS, YOGAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
 
-interface Props { data: any; }
+interface Props { data: any; pageDate: string; }
 
 interface Slot {
   name: string;
@@ -15,10 +16,14 @@ interface Slot {
   end: string | null;
 }
 
-function formatSlotTime(start: string | null, end: string | null): string {
+function SlotTime({ start, end, pageDate }: { start: string | null; end: string | null; pageDate: string }) {
   const s = start ? formatTime(start) : '00:00';
   const e = end   ? formatTime(end)   : '23:59';
-  return `${s} – ${e}`;
+  return (
+    <>
+      <DateTag iso={start} pageDate={pageDate} />{s} – <DateTag iso={end} pageDate={pageDate} />{e}
+    </>
+  );
 }
 
 function nameColor(isAuspicious: boolean | null | undefined): string | undefined {
@@ -33,12 +38,13 @@ function borderColor(isAuspicious: boolean | null | undefined): string {
   return 'rgba(200,150,26,0.35)';
 }
 
-function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: {
+function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, pageDate }: {
   label: string;
   labelDotKey?: string;
   slots: Slot[];
   getValueInfo: (name: string) => { isAuspicious: boolean } | null;
   getValueBrief: (name: string) => string | undefined;
+  pageDate: string;
 }) {
   const labelInfo = labelDotKey ? ELEMENT_TYPES[labelDotKey] : null;
 
@@ -57,7 +63,6 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
         const displayName = slot.paksha ? `${slot.paksha} ${slot.name}` : slot.name;
         const vi = getValueInfo(slot.name);
         const brief = getValueBrief(slot.name);
-        const timing = formatSlotTime(slot.start, slot.end);
         const color = nameColor(vi?.isAuspicious);
         return (
           <div key={i} style={{
@@ -93,7 +98,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief }: 
               whiteSpace: 'nowrap',
               textAlign: 'right',
             }}>
-              {timing}
+              <SlotTime start={slot.start} end={slot.end} pageDate={pageDate} />
             </span>
           </div>
         );
@@ -120,7 +125,7 @@ function SimpleRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function BasicInfo({ data }: Props) {
+export default function BasicInfo({ data, pageDate }: Props) {
   const { tithi, nakshatra, yoga, karana, vara, sunMoonTimes, moonSign, suryaNakshatra, suryaPada, nakshatraPada, transitions } = data;
 
   const tithiSlots: Slot[] = transitions?.tithi?.length
@@ -158,6 +163,7 @@ export default function BasicInfo({ data }: Props) {
         slots={tithiSlots}
         getValueInfo={name => TITHIS[name] ?? null}
         getValueBrief={name => TITHIS[name]?.idealFor}
+        pageDate={pageDate}
       />
 
       <ElementRow
@@ -166,6 +172,7 @@ export default function BasicInfo({ data }: Props) {
         slots={varaSlots}
         getValueInfo={name => VARAS[name] ?? null}
         getValueBrief={name => VARAS[name]?.idealFor}
+        pageDate={pageDate}
       />
 
       <ElementRow
@@ -180,6 +187,7 @@ export default function BasicInfo({ data }: Props) {
           const base = name.replace(/ \(P\d\)$/, '');
           return NAKSHATRAS[base]?.idealFor;
         }}
+        pageDate={pageDate}
       />
       <ElementRow
         label="Yoga"
@@ -187,6 +195,7 @@ export default function BasicInfo({ data }: Props) {
         slots={yogaSlots}
         getValueInfo={name => YOGAS[name] ?? null}
         getValueBrief={name => YOGAS[name]?.idealFor}
+        pageDate={pageDate}
       />
       <ElementRow
         label="Karana"
@@ -194,6 +203,7 @@ export default function BasicInfo({ data }: Props) {
         slots={karanaSlots}
         getValueInfo={name => KARANAS[name] ?? null}
         getValueBrief={name => KARANAS[name]?.idealFor}
+        pageDate={pageDate}
       />
 
       <ElementRow
@@ -202,6 +212,7 @@ export default function BasicInfo({ data }: Props) {
         slots={pakshaSlots}
         getValueInfo={name => PAKSHAS[name] ?? null}
         getValueBrief={name => PAKSHAS[name]?.idealFor}
+        pageDate={pageDate}
       />
 
       {/* Rashi & Nakshatra */}

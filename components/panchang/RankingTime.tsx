@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ExpandSection from '@/components/ui/ExpandSection';
+import DateTag from '@/components/ui/DateTag';
 import { formatTime } from '@/lib/formatTime';
 import { TITHIS, YOGAS, NAKSHATRAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
 import { computeRankedSlots } from '@/lib/rankedSlots';
@@ -42,9 +43,9 @@ function rankClass(i: number) {
   return i < 3 ? `rank-${i + 1}` : 'rank-n';
 }
 
-interface Props { muhurta: Record<string, any>; panchangData: any; }
+interface Props { muhurta: Record<string, any>; panchangData: any; pageDate: string; }
 
-export default function RankingTime({ muhurta, panchangData }: Props) {
+export default function RankingTime({ muhurta, panchangData, pageDate }: Props) {
   const ranked = computeRankedSlots(muhurta);
   const qualityBrief = buildQualityBrief(panchangData);
 
@@ -130,7 +131,7 @@ export default function RankingTime({ muhurta, panchangData }: Props) {
               </span>
               <div style={{ flex: 1 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  <span className="time-range">{formatTime(startIso)} — {formatTime(endIso)}</span>
+                  <span className="time-range"><DateTag iso={startIso} pageDate={pageDate} />{formatTime(startIso)} — <DateTag iso={endIso} pageDate={pageDate} />{formatTime(endIso)}</span>
                   <span
                     onClick={e => openPopup(e, 'stars', i)}
                     onTouchEnd={e => openPopup(e as any, 'stars', i)}

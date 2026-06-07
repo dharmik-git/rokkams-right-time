@@ -1,5 +1,9 @@
 export const MUSCAT_TZ = 'Asia/Muscat';
 
+export function getTimingLocalDate(iso: string): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: MUSCAT_TZ }).format(new Date(iso));
+}
+
 export function formatTime(iso: string | null | undefined): string {
   if (!iso) return '—';
   return new Date(iso).toLocaleTimeString('en-GB', {

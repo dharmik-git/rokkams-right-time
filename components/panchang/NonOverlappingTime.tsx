@@ -1,5 +1,6 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
+import DateTag from '@/components/ui/DateTag';
 import ExpandSection from '@/components/ui/ExpandSection';
 import { formatTime } from '@/lib/formatTime';
 import { MUHURTA_INFO } from '@/lib/data/descriptions';
@@ -74,9 +75,9 @@ function findOverlaps(src: Interval, muhurta: Record<string, any>): Array<{ labe
   return overlaps;
 }
 
-interface Props { muhurta: Record<string, any>; }
+interface Props { muhurta: Record<string, any>; pageDate: string; }
 
-export default function NonOverlappingTime({ muhurta }: Props) {
+export default function NonOverlappingTime({ muhurta, pageDate }: Props) {
   // Collect all inauspicious intervals (flat list for subtraction)
   const badIntervals: Interval[] = [];
   for (const { key } of INAUSPICIOUS_ORDER) {
@@ -141,7 +142,7 @@ export default function NonOverlappingTime({ muhurta }: Props) {
                     fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.7rem, 2vw, 0.82rem)',
                     fontWeight: 600, color: 'var(--moonsilver)', whiteSpace: 'nowrap',
                   }}>
-                    {formatTime(iv.start)} — {formatTime(iv.end)}
+                    <DateTag iso={iv.start} pageDate={pageDate} />{formatTime(iv.start)} — <DateTag iso={iv.end} pageDate={pageDate} />{formatTime(iv.end)}
                   </span>
                 ))
               )}
