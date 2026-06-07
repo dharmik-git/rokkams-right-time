@@ -1,8 +1,9 @@
 'use client';
 import InfoDot from '@/components/ui/InfoDot';
 import DateTag from '@/components/ui/DateTag';
+import MoonCycleTag from '@/components/ui/MoonCycleTag';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTime } from '@/lib/formatTime';
+import { formatTime, stepDate, formatDateDisplay } from '@/lib/formatTime';
 import { ELEMENT_TYPES, TITHIS, NAKSHATRAS, YOGAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
 
 interface Props { data: any; pageDate: string; }
@@ -107,12 +108,12 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, pa
   );
 }
 
-function SunMoonRow({ label, iso, pageDate, noBorder }: { label: string; iso: string | null | undefined; pageDate: string; noBorder?: boolean }) {
+function SunMoonRow({ label, iso, pageDate, prefixEl, noBorder }: { label: string; iso: string | null | undefined; pageDate: string; prefixEl?: React.ReactNode; noBorder?: boolean }) {
   return (
     <div className="info-row" style={noBorder ? { borderBottom: 'none' } : undefined}>
       <div className="info-label">{label}</div>
       <div className="info-value" style={{ fontFamily: 'Cinzel, serif', fontSize: '0.95rem', color: 'var(--gold-light)' }}>
-        <DateTag iso={iso} pageDate={pageDate} />{iso ? formatTime(iso) : '—'}
+        {prefixEl}<DateTag iso={iso} pageDate={pageDate} />{iso ? formatTime(iso) : '—'}
       </div>
     </div>
   );
@@ -129,6 +130,13 @@ function SimpleRow({ label, value }: { label: string; value: string }) {
 
 export default function BasicInfo({ data, pageDate }: Props) {
   const { tithi, nakshatra, yoga, karana, vara, sunMoonTimes, moonSign, suryaNakshatra, suryaPada, nakshatraPada, transitions } = data;
+
+  const { moonrise, moonset } = sunMoonTimes;
+  const moonsetFromPrevCycle =
+    !!moonset && (!moonrise || new Date(moonset).getTime() < new Date(moonrise).getTime());
+  const moonroseOnDate = moonsetFromPrevCycle
+    ? formatDateDisplay(stepDate(pageDate, -1))
+    : null;
 
   const tithiSlots: Slot[] = transitions?.tithi?.length
     ? transitions.tithi
@@ -156,7 +164,7 @@ export default function BasicInfo({ data, pageDate }: Props) {
       <SunMoonRow label="Sunrise"  iso={sunMoonTimes.sunrise}  pageDate={pageDate} noBorder />
       <SunMoonRow label="Sunset"   iso={sunMoonTimes.sunset}   pageDate={pageDate} />
       <SunMoonRow label="Moonrise" iso={sunMoonTimes.moonrise} pageDate={pageDate} noBorder />
-      <SunMoonRow label="Moonset"  iso={sunMoonTimes.moonset}  pageDate={pageDate} />
+      <SunMoonRow label="Moonset"  iso={sunMoonTimes.moonset}  pageDate={pageDate} prefixEl={moonroseOnDate ? <MoonCycleTag roseOnDate={moonroseOnDate} /> : undefined} />
 
       {/* Order: Tithi, Vara, Nakshatra, Yoga, Karana, Paksha */}
       <ElementRow
