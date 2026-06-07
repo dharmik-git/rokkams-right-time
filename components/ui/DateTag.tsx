@@ -88,12 +88,12 @@ function DateTagInner({ formattedDate }: { formattedDate: string }) {
         aria-label={`This time is on ${formattedDate}`}
         onKeyDown={e => e.key === 'Enter' && show(e as any)}
         style={{
-          color: 'var(--gold-dim, rgba(200,150,26,0.55))',
-          fontSize: '0.65em',
-          fontWeight: 700,
+          color: '#7a3e1a',
+          fontSize: '0.82em',
+          fontWeight: 800,
           cursor: 'pointer',
           userSelect: 'none',
-          marginRight: '1px',
+          marginRight: '2px',
           lineHeight: 1,
         }}
       >#</sup>

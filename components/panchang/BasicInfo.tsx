@@ -107,11 +107,13 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, pa
   );
 }
 
-function SunMoonRow({ label, value, noBorder }: { label: string; value: string; noBorder?: boolean }) {
+function SunMoonRow({ label, iso, pageDate, noBorder }: { label: string; iso: string | null | undefined; pageDate: string; noBorder?: boolean }) {
   return (
     <div className="info-row" style={noBorder ? { borderBottom: 'none' } : undefined}>
       <div className="info-label">{label}</div>
-      <div className="info-value" style={{ fontFamily: 'Cinzel, serif', fontSize: '0.95rem', color: 'var(--gold-light)' }}>{value}</div>
+      <div className="info-value" style={{ fontFamily: 'Cinzel, serif', fontSize: '0.95rem', color: 'var(--gold-light)' }}>
+        <DateTag iso={iso} pageDate={pageDate} />{iso ? formatTime(iso) : '—'}
+      </div>
     </div>
   );
 }
@@ -151,10 +153,10 @@ export default function BasicInfo({ data, pageDate }: Props) {
   return (
     <ExpandSection title="Basic Info" defaultOpen={false}>
       {/* Sun & Moon — no heading; no border between Sunrise/Sunset pair and Moonrise/Moonset pair */}
-      <SunMoonRow label="Sunrise"  value={formatTime(sunMoonTimes.sunrise)} noBorder />
-      <SunMoonRow label="Sunset"   value={formatTime(sunMoonTimes.sunset)} />
-      <SunMoonRow label="Moonrise" value={formatTime(sunMoonTimes.moonrise) || '—'} noBorder />
-      <SunMoonRow label="Moonset"  value={formatTime(sunMoonTimes.moonset) || '—'} />
+      <SunMoonRow label="Sunrise"  iso={sunMoonTimes.sunrise}  pageDate={pageDate} noBorder />
+      <SunMoonRow label="Sunset"   iso={sunMoonTimes.sunset}   pageDate={pageDate} />
+      <SunMoonRow label="Moonrise" iso={sunMoonTimes.moonrise} pageDate={pageDate} noBorder />
+      <SunMoonRow label="Moonset"  iso={sunMoonTimes.moonset}  pageDate={pageDate} />
 
       {/* Order: Tithi, Vara, Nakshatra, Yoga, Karana, Paksha */}
       <ElementRow
