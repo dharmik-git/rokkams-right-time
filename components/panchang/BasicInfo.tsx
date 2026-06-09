@@ -15,27 +15,14 @@ interface Slot {
   isAuspicious?: boolean;
   start: string | null;
   end: string | null;
-  startReal?: string;
-  endReal?: string;
 }
 
-// English weekday names indexed by vara.index (0 = Sunday)
-const WEEKDAYS_EN = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-
-function SlotTime({ start, end, startReal, endReal, pageDate }: {
-  start: string | null; end: string | null;
-  startReal?: string; endReal?: string;
-  pageDate: string;
-}) {
-  // Prefer the true astronomical boundary times; they make DateTag show the
-  // next-day "#" hash when the element crosses midnight, instead of capping at 00:00/23:59.
-  const startIso = start ?? startReal ?? null;
-  const endIso   = end   ?? endReal   ?? null;
-  const s = startIso ? formatTime(startIso) : '00:00';
-  const e = endIso   ? formatTime(endIso)   : '23:59';
+function SlotTime({ start, end, pageDate }: { start: string | null; end: string | null; pageDate: string }) {
+  const s = start ? formatTime(start) : '00:00';
+  const e = end   ? formatTime(end)   : '23:59';
   return (
     <>
-      <DateTag iso={startIso} pageDate={pageDate} />{s} – <DateTag iso={endIso} pageDate={pageDate} />{e}
+      <DateTag iso={start} pageDate={pageDate} />{s} – <DateTag iso={end} pageDate={pageDate} />{e}
     </>
   );
 }
@@ -52,14 +39,13 @@ function borderColor(isAuspicious: boolean | null | undefined): string {
   return 'rgba(200,150,26,0.35)';
 }
 
-function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, pageDate, rightOverride }: {
+function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, pageDate }: {
   label: string;
   labelDotKey?: string;
   slots: Slot[];
   getValueInfo: (name: string) => { isAuspicious: boolean } | null;
   getValueBrief: (name: string) => string | undefined;
   pageDate: string;
-  rightOverride?: React.ReactNode;
 }) {
   const labelInfo = labelDotKey ? ELEMENT_TYPES[labelDotKey] : null;
 
@@ -113,13 +99,7 @@ function ElementRow({ label, labelDotKey, slots, getValueInfo, getValueBrief, pa
               whiteSpace: 'nowrap',
               textAlign: 'right',
             }}>
-              {rightOverride ?? (
-                <SlotTime
-                  start={slot.start} end={slot.end}
-                  startReal={slot.startReal} endReal={slot.endReal}
-                  pageDate={pageDate}
-                />
-              )}
+              <SlotTime start={slot.start} end={slot.end} pageDate={pageDate} />
             </span>
           </div>
         );
@@ -148,39 +128,8 @@ function SimpleRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-// Paksha: no timing — the value (Krishna/Shukla) sits where the timing used to be.
-function PakshaRow({ value }: { value: string }) {
-  const labelInfo = ELEMENT_TYPES['paksha'];
-  const vi = PAKSHAS[value];
-  const color = nameColor(vi?.isAuspicious);
-  return (
-    <div style={{ paddingBottom: '0.5rem', borderBottom: '1px solid rgba(128,100,50,0.1)', marginBottom: '0.1rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '0.35rem', gap: '0.4rem' }}>
-        <div className="info-label" style={{ minWidth: 90, flexShrink: 0 }}>
-          {labelInfo && <InfoDot title={labelInfo.label} brief={labelInfo.brief} large />}
-          Paksha
-        </div>
-        <span style={{
-          flexShrink: 0,
-          fontFamily: 'Cinzel, serif',
-          fontSize: 'clamp(0.75rem, 2.5vw, 0.85rem)',
-          fontWeight: 600,
-          color: color ?? 'var(--moonsilver)',
-          letterSpacing: '0.02em',
-          whiteSpace: 'nowrap',
-          textAlign: 'right',
-          display: 'flex', alignItems: 'center', gap: '0.35rem',
-        }}>
-          {vi?.idealFor && <InfoDot title={value} brief={vi.idealFor} isAuspicious={vi.isAuspicious} />}
-          {value}
-        </span>
-      </div>
-    </div>
-  );
-}
-
 export default function BasicInfo({ data, pageDate }: Props) {
-  const { tithi, nakshatra, yoga, karana, vara, sunMoonTimes, moonSign, suryaNakshatra, transitions } = data;
+  const { tithi, nakshatra, yoga, karana, vara, sunMoonTimes, moonSign, suryaNakshatra, suryaPada, nakshatraPada, transitions } = data;
 
   const { moonrise, moonset } = sunMoonTimes;
   const moonsetFromPrevCycle =
@@ -205,8 +154,9 @@ export default function BasicInfo({ data, pageDate }: Props) {
     ? transitions.karana
     : [{ name: karana.name, start: null, end: null }];
 
-  // Vara has no astronomical transition: show its English weekday instead of a time.
+  // Vara and Paksha are always full-day (null start/end → 00:00–23:59)
   const varaSlots: Slot[] = [{ name: vara.name, start: null, end: null }];
+  const pakshaSlots: Slot[] = [{ name: tithi.paksha, start: null, end: null }];
 
   return (
     <ExpandSection title="Basic Info" defaultOpen={false}>
@@ -233,7 +183,6 @@ export default function BasicInfo({ data, pageDate }: Props) {
         getValueInfo={name => VARAS[name] ?? null}
         getValueBrief={name => VARAS[name]?.idealFor}
         pageDate={pageDate}
-        rightOverride={WEEKDAYS_EN[vara.index]}
       />
 
       <ElementRow
@@ -261,12 +210,21 @@ export default function BasicInfo({ data, pageDate }: Props) {
         pageDate={pageDate}
       />
 
-      <PakshaRow value={tithi.paksha} />
+      <ElementRow
+        label="Paksha"
+        labelDotKey="paksha"
+        slots={pakshaSlots}
+        getValueInfo={name => PAKSHAS[name] ?? null}
+        getValueBrief={name => PAKSHAS[name]?.idealFor}
+        pageDate={pageDate}
+      />
 
       {/* Rashi & Nakshatra */}
       <p className="sub-label" style={{ marginTop: '1rem' }}>☽ Rashi &amp; Nakshatra</p>
       <SimpleRow label="Moon Sign"       value={moonSign} />
       <SimpleRow label="Surya Nakshatra" value={suryaNakshatra} />
+      <SimpleRow label="Surya Pada"      value={String(suryaPada)} />
+      <SimpleRow label="Chandra Pada"    value={String(nakshatraPada)} />
     </ExpandSection>
   );
 }
