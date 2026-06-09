@@ -97,16 +97,64 @@ function findSegments(
     segments.push({ index: prevIdx, startJdn: segStart, endJdn: jdnEnd });
   }
 
+  // ── Extend the boundary segments to their TRUE crossings ──────────────────
+  // The first/last segments are pinned to the day boundary above, which hides
+  // the element's real start (previous day) and real end (next day). Search
+  // past the boundary for the actual index change so callers can display the
+  // true cross-midnight time. LOOKAHEAD safely exceeds the max element span (~27h).
+  const LOOKAHEAD = 1.5;
+
+  if (segments.length > 0) {
+    // True start of the first segment (search backwards before jdnStart)
+    const first = segments[0];
+    if (first.startJdn <= jdnStart + MIN_SEGMENT) {
+      const idx = getIndex(first.startJdn + MIN_SEGMENT);
+      for (let jdn = jdnStart - step; jdn >= jdnStart - LOOKAHEAD; jdn -= step) {
+        if (getIndex(jdn) !== idx) {
+          let lo = jdn, hi = jdn + step;
+          for (let i = 0; i < 45; i++) {
+            const mid = (lo + hi) / 2;
+            if (getIndex(mid) === idx) hi = mid; else lo = mid;
+          }
+          first.startJdn = (lo + hi) / 2;
+          break;
+        }
+      }
+    }
+
+    // True end of the last segment (search forwards past jdnEnd)
+    const last = segments[segments.length - 1];
+    if (last.endJdn >= jdnEnd - MIN_SEGMENT) {
+      const idx = getIndex(last.endJdn - MIN_SEGMENT);
+      for (let jdn = jdnEnd + step; jdn <= jdnEnd + LOOKAHEAD; jdn += step) {
+        if (getIndex(jdn) !== idx) {
+          let lo = jdn - step, hi = jdn;
+          for (let i = 0; i < 45; i++) {
+            const mid = (lo + hi) / 2;
+            if (getIndex(mid) === idx) lo = mid; else hi = mid;
+          }
+          last.endJdn = (lo + hi) / 2;
+          break;
+        }
+      }
+    }
+  }
+
   return segments;
 }
 
 // ─── Public interfaces ───────────────────────────────────────────────────────
 
+// startReal/endReal carry the TRUE astronomical boundary times (may fall on the
+// previous/next calendar day) for DISPLAY only. start/end keep their null-capped
+// semantics so consumers like businessMuhurta are unaffected.
 export interface TithiSlot {
   name: string;
   paksha: 'Shukla' | 'Krishna';
   start: string | null; // ISO string; null = started before day
   end: string | null;   // ISO string; null = continues after day
+  startReal?: string;   // true start (set when start is null)
+  endReal?: string;     // true end (set when end is null)
 }
 
 export interface NakshatraSlot {
@@ -114,6 +162,8 @@ export interface NakshatraSlot {
   pada: number;
   start: string | null;
   end: string | null;
+  startReal?: string;
+  endReal?: string;
 }
 
 export interface YogaSlot {
@@ -121,12 +171,16 @@ export interface YogaSlot {
   isAuspicious: boolean;
   start: string | null;
   end: string | null;
+  startReal?: string;
+  endReal?: string;
 }
 
 export interface KaranaSlot {
   name: string;
   start: string | null;
   end: string | null;
+  startReal?: string;
+  endReal?: string;
 }
 
 export interface DayTransitions {
@@ -139,6 +193,26 @@ export interface DayTransitions {
 function roundToMinute(jdn: number): Date {
   const ms = (jdn - 2440587.5) * 86400000;
   return new Date(Math.round(ms / 60000) * 60000);
+}
+
+/**
+ * Derive the four boundary fields for a slot. start/end keep their null-capped
+ * semantics (null = crosses the day boundary). When capped, the TRUE boundary
+ * time is exposed via startReal/endReal for display.
+ */
+function boundaryFields(seg: Segment, i: number, jdnStart: number, jdnEnd: number): {
+  start: string | null; end: string | null; startReal?: string; endReal?: string;
+} {
+  const startCapped = i === 0 && seg.startJdn <= jdnStart + 0.001;
+  const endCapped   = seg.endJdn >= jdnEnd - 0.001;
+  const startIso = roundToMinute(seg.startJdn).toISOString();
+  const endIso   = roundToMinute(seg.endJdn).toISOString();
+  return {
+    start: startCapped ? null : startIso,
+    end:   endCapped   ? null : endIso,
+    ...(startCapped ? { startReal: startIso } : {}),
+    ...(endCapped   ? { endReal:   endIso   } : {}),
+  };
 }
 
 // ─── Main export ─────────────────────────────────────────────────────────────
@@ -162,8 +236,7 @@ export function computeTransitions(dayStart: Date, dayEnd: Date): DayTransitions
     return {
       name:   t.name,
       paksha: t.paksha,
-      start: i === 0 && seg.startJdn <= jdnStart + 0.001 ? null : roundToMinute(seg.startJdn).toISOString(),
-      end:   seg.endJdn >= jdnEnd - 0.001 ? null : roundToMinute(seg.endJdn).toISOString(),
+      ...boundaryFields(seg, i, jdnStart, jdnEnd),
     };
   });
 
@@ -179,8 +252,7 @@ export function computeTransitions(dayStart: Date, dayEnd: Date): DayTransitions
     return {
       name: n.name,
       pada: n.pada,
-      start: i === 0 && seg.startJdn <= jdnStart + 0.001 ? null : roundToMinute(seg.startJdn).toISOString(),
-      end:   seg.endJdn >= jdnEnd - 0.001 ? null : roundToMinute(seg.endJdn).toISOString(),
+      ...boundaryFields(seg, i, jdnStart, jdnEnd),
     };
   });
 
@@ -203,8 +275,7 @@ export function computeTransitions(dayStart: Date, dayEnd: Date): DayTransitions
   const yogaSlots: YogaSlot[] = yogaSegs.map((seg, i) => ({
     name: YOGA_NAMES[seg.index] ?? `Yoga ${seg.index}`,
     isAuspicious: AUS_YOGA.has(seg.index),
-    start: i === 0 && seg.startJdn <= jdnStart + 0.001 ? null : roundToMinute(seg.startJdn).toISOString(),
-    end:   seg.endJdn >= jdnEnd - 0.001 ? null : roundToMinute(seg.endJdn).toISOString(),
+    ...boundaryFields(seg, i, jdnStart, jdnEnd),
   }));
 
   // ── Karana ──
@@ -213,7 +284,7 @@ export function computeTransitions(dayStart: Date, dayEnd: Date): DayTransitions
   });
 
   const FIXED_K  = ['Kimstughna','Shakuni','Chatushpada','Naga'];
-  const REPEAT_K = ['Bava','Balava','Kaulava','Taitila','Gara','Vanija','Vishti'];
+  const REPEAT_K = ['Bava','Balava','Kaulava','Taitila','Garija','Vanija','Vishti'];
 
   karanaSegs;
   const karanaSlots: KaranaSlot[] = karanaSegs.map((seg, i) => {
@@ -224,8 +295,7 @@ export function computeTransitions(dayStart: Date, dayEnd: Date): DayTransitions
     else name = REPEAT_K[(ki - 1) % 7];
     return {
       name,
-      start: i === 0 && seg.startJdn <= jdnStart + 0.001 ? null : roundToMinute(seg.startJdn).toISOString(),
-      end:   seg.endJdn >= jdnEnd - 0.001 ? null : roundToMinute(seg.endJdn).toISOString(),
+      ...boundaryFields(seg, i, jdnStart, jdnEnd),
     };
   });
 

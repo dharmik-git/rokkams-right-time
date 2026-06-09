@@ -182,12 +182,89 @@ function parseBhadra(
   return [];
 }
 
+/**
+ * Locate time tokens in the raw HTML, tolerant of the <span> tags DrikPanchang
+ * inserts between the digits and the AM/PM marker (e.g. "12:29 <span>PM</span>").
+ * Returns minutes-since-midnight plus the start/end character positions so a
+ * following date annotation ("…, Jun 25") can be detected for next-day times.
+ */
+function findTimeTokens(raw: string): { mins: number; startPos: number; endPos: number }[] {
+  const re = /(\d{1,2}):(\d{2})(?:\s|<[^>]*>)*?(AM|PM)/gi;
+  const out: { mins: number; startPos: number; endPos: number }[] = [];
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(raw)) !== null) {
+    let h = parseInt(m[1], 10);
+    const min = parseInt(m[2], 10);
+    if (m[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+    if (m[3].toUpperCase() === 'AM' && h === 12) h = 0;
+    out.push({ mins: h * 60 + min, startPos: m.index, endPos: re.lastIndex });
+  }
+  return out;
+}
+
+/**
+ * Vidaal Yoga is presented like Bhadra — a time range over the panchang day
+ * (e.g. "05:19 AM to 11:46 PM"), possibly crossing into the next day
+ * ("…, Jun 25") or "Full Night", and absent when not observed.
+ */
+function parseVidalYoga(
+  pageHtml: string,
+  sunrise: Date,
+  nextSunrise: Date,
+  localMidnight: Date
+): TimeInterval[] {
+  const raw = extractValueHtml(pageHtml, 'Vidaal Yoga');
+  if (!raw || /^\s*(&nbsp;)?\s*$/.test(raw)) return [];
+
+  const text = stripHtml(raw);
+  const nextMidnight = new Date(localMidnight.getTime() + 86400000);
+  const toks = findTimeTokens(raw);
+  if (toks.length === 0) return [];
+
+  // A month-name date annotation within `span` after a time → that time is next-day.
+  const nextDayAfter = (fromPos: number, toPos: number) =>
+    nextDayDateFollows(raw.slice(fromPos, toPos));
+
+  // "Full Night" end → starts at first time, clips to nextSunrise
+  if (/full\s*night/i.test(text)) {
+    const t = toks[0];
+    const start = minutesToDate(t.mins, nextDayAfter(t.endPos, t.endPos + 220) ? nextMidnight : localMidnight);
+    const clipStart = new Date(Math.max(start.getTime(), sunrise.getTime()));
+    if (clipStart >= nextSunrise) return [];
+    return [{ start: clipStart, end: nextSunrise }];
+  }
+
+  // "upto HH:MM" → started before sunrise, single end time
+  if (/upto/i.test(text)) {
+    const t = toks[0];
+    const end = minutesToDate(t.mins, nextDayAfter(t.endPos, t.endPos + 220) ? nextMidnight : localMidnight);
+    const clipEnd = new Date(Math.min(end.getTime(), nextSunrise.getTime()));
+    if (clipEnd <= sunrise) return [];
+    return [{ start: sunrise, end: clipEnd }];
+  }
+
+  // "START to END[, Mon DD]" range
+  if (toks.length >= 2) {
+    const a = toks[0], b = toks[1];
+    const startNextDay = nextDayAfter(a.endPos, b.startPos);            // date between the two times → start is next-day
+    const endNextDay   = startNextDay || nextDayAfter(b.endPos, b.endPos + 220);
+    const start = minutesToDate(a.mins, startNextDay ? nextMidnight : localMidnight);
+    const end   = minutesToDate(b.mins, endNextDay   ? nextMidnight : localMidnight);
+    const clipStart = new Date(Math.max(start.getTime(), sunrise.getTime()));
+    const clipEnd   = new Date(Math.min(end.getTime(),   nextSunrise.getTime()));
+    if (clipEnd <= clipStart) return [];
+    return [{ start: clipStart, end: clipEnd }];
+  }
+
+  return [];
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
-export async function fetchDrikBaanaAndBhadra(
+export async function fetchDrikInauspicious(
   sunrise: Date,
   nextSunrise: Date
-): Promise<{ baana: TimeInterval[]; bhadra: TimeInterval[] }> {
+): Promise<{ baana: TimeInterval[]; bhadra: TimeInterval[]; vidalYoga: TimeInterval[] }> {
   // Format the panchang date as DD/MM/YYYY in Muscat local time
   const localDate = new Date(sunrise.getTime() + TZ_HOURS * 3600000);
   const dd = localDate.getUTCDate().toString().padStart(2, '0');
@@ -209,14 +286,15 @@ export async function fetchDrikBaanaAndBhadra(
         next: { revalidate: 86400 },
       }
     );
-    if (!res.ok) return { baana: [], bhadra: [] };
+    if (!res.ok) return { baana: [], bhadra: [], vidalYoga: [] };
     const html = await res.text();
 
     return {
-      baana:  parseBaana(html, sunrise, nextSunrise, localMidnight),
-      bhadra: parseBhadra(html, sunrise, nextSunrise, localMidnight),
+      baana:     parseBaana(html, sunrise, nextSunrise, localMidnight),
+      bhadra:    parseBhadra(html, sunrise, nextSunrise, localMidnight),
+      vidalYoga: parseVidalYoga(html, sunrise, nextSunrise, localMidnight),
     };
   } catch {
-    return { baana: [], bhadra: [] };
+    return { baana: [], bhadra: [], vidalYoga: [] };
   }
 }

@@ -3,7 +3,7 @@ import { computePanchang } from '@/lib/calculations/panchang';
 import { calculateMuhurta } from '@/lib/calculations/muhurta';
 import { computeTransitions } from '@/lib/calculations/transitions';
 import { computeAmritKalam, computeVidalYoga, computeVarjyam, computeBaana, computeBhadra } from '@/lib/calculations/nakshatraMuhurta';
-import { fetchDrikBaanaAndBhadra } from '@/lib/drikpanchang';
+import { fetchDrikInauspicious } from '@/lib/drikpanchang';
 import { computeBusinessSlots } from '@/lib/businessMuhurta';
 import { MUSCAT } from '@/lib/muscat';
 
@@ -133,13 +133,15 @@ export async function POST(req: NextRequest) {
     const nextData = computePanchang(tomorrow, MUSCAT);
     const nextSunrise = nextData.sunMoonTimes.sunrise;
     muhurta.amritKalam = computeAmritKalam(sunrise, nextSunrise);
-    muhurta.vidalYoga  = computeVidalYoga(sunrise, nextSunrise);
     muhurta.varjyam    = computeVarjyam(sunrise, nextSunrise);
 
-    // Baana and Bhadra fetched live from DrikPanchang (Muscat)
-    const drik = await fetchDrikBaanaAndBhadra(sunrise, nextSunrise);
-    muhurta.baana  = drik.baana;
-    muhurta.bhadra = drik.bhadra;
+    // Baana, Bhadra and Vidaal Yoga fetched live from DrikPanchang (Muscat).
+    // Vidaal Yoga depends on the weekday+nakshatra combination, so we take it
+    // from DrikPanchang to match exactly (empty = not observed that day).
+    const drik = await fetchDrikInauspicious(sunrise, nextSunrise);
+    muhurta.baana     = drik.baana;
+    muhurta.bhadra    = drik.bhadra;
+    muhurta.vidalYoga = drik.vidalYoga;
 
     // Compute element transition times for the full Muscat calendar day (midnight → midnight)
     const offsetMin = getUTCOffsetMinutes(date, MUSCAT.timezone);
