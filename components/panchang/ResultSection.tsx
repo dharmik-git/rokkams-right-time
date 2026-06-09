@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 import ExpandSection from '@/components/ui/ExpandSection';
 import InfoDot from '@/components/ui/InfoDot';
 import DateTag from '@/components/ui/DateTag';
-import { formatTime } from '@/lib/formatTime';
+import { formatTime, getPageDayEndMs } from '@/lib/formatTime';
 import { computeBusinessSlots, type BusinessSlot } from '@/lib/businessMuhurta';
 import type { DayTransitions } from '@/lib/calculations/transitions';
 
@@ -159,7 +159,9 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
 
 // ── Main component ────────────────────────────────────────────────────────────
 export default function ResultSection({ muhurta, transitions, vara, paksha, pageDate, nextSunrise }: Props) {
-  const dayEndMs = nextSunrise ? new Date(nextSunrise).getTime() : undefined;
+  const pageEndMs = getPageDayEndMs(pageDate);
+  const nextSunriseMs = nextSunrise ? new Date(nextSunrise).getTime() : undefined;
+  const dayEndMs = nextSunriseMs !== undefined ? Math.min(nextSunriseMs, pageEndMs) : pageEndMs;
   const slots = computeBusinessSlots(transitions, muhurta, vara.index, paksha, dayEndMs);
 
   const [popup, setPopup] = useState<{ index: number; pos: { top: number; left: number } } | null>(null);
@@ -235,7 +237,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha, page
         <>
           {(showAll ? slots : slots.slice(0, 5)).map((slot, i) => {
             const startIso = new Date(slot.start).toISOString();
-            const endIso   = new Date(slot.end).toISOString();
+            const endIso   = new Date(Math.min(slot.end, pageEndMs - 60_000)).toISOString();
             return (
               <div key={i} className="time-chip" style={{ alignItems: 'center', gap: '0.6rem' }}>
                 <span

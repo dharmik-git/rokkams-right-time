@@ -2,7 +2,7 @@
 import InfoDot from '@/components/ui/InfoDot';
 import DateTag from '@/components/ui/DateTag';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTime } from '@/lib/formatTime';
+import { formatTime, getPageDayEndMs } from '@/lib/formatTime';
 import { MUHURTA_INFO } from '@/lib/data/descriptions';
 
 interface Interval { start: string; end: string; }
@@ -76,7 +76,23 @@ export default function AuspiciousTime({ muhurta, pageDate }: Props) {
             </div>
           );
         }
-        const intervals: Interval[] = Array.isArray(raw) ? raw : [raw];
+        const pageEndMs = getPageDayEndMs(pageDate);
+        const intervals: Interval[] = (Array.isArray(raw) ? raw : [raw])
+          .filter((iv: Interval) => new Date(iv.start).getTime() < pageEndMs)
+          .map((iv: Interval) => {
+            const endMs = new Date(iv.end).getTime();
+            return endMs > pageEndMs ? { ...iv, end: new Date(pageEndMs - 60_000).toISOString() } : iv;
+          });
+        if (intervals.length === 0) {
+          const info = MUHURTA_INFO[key];
+          return (
+            <div key={key} className="time-chip" style={{ alignItems: 'center', gap: '0.4rem', opacity: 0.4 }}>
+              {info && <InfoDot title={info.name} brief={info.idealFor} isAuspicious={null} />}
+              <span style={{ fontFamily: 'Cinzel, serif', fontSize: 'clamp(0.78rem, 2.5vw, 0.92rem)', fontWeight: 600, color: 'var(--moonsilver-dim)', letterSpacing: '0.04em', flex: 1, minWidth: 0 }}>{label}</span>
+              <span style={{ fontSize: '0.78rem', color: 'var(--moonsilver-dim)', fontStyle: 'italic', flexShrink: 0 }}>Not observed today</span>
+            </div>
+          );
+        }
         return <MuhurtaRow key={key} infoKey={key} label={label} intervals={intervals} pageDate={pageDate} />;
       })}
     </ExpandSection>

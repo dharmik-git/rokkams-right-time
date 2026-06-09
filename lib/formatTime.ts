@@ -29,6 +29,12 @@ export function stepDate(dateStr: string, delta: number): string {
   return `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
 }
 
+export function getPageDayEndMs(pageDate: string): number {
+  // Midnight (end of calendar day) in Muscat (UTC+4, no DST) = pageDate T20:00:00Z
+  const [y, m, d] = pageDate.split('-').map(Number);
+  return Date.UTC(y, m - 1, d, 20, 0, 0);
+}
+
 export function digitRoot(dateStr: string): number {
   const digits = dateStr.replace(/-/g, '').split('').map(Number);
   let sum = digits.reduce((a, b) => a + b, 0);

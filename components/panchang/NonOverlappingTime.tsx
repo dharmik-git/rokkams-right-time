@@ -2,7 +2,7 @@
 import InfoDot from '@/components/ui/InfoDot';
 import DateTag from '@/components/ui/DateTag';
 import ExpandSection from '@/components/ui/ExpandSection';
-import { formatTime } from '@/lib/formatTime';
+import { formatTime, getPageDayEndMs } from '@/lib/formatTime';
 import { MUHURTA_INFO } from '@/lib/data/descriptions';
 
 interface Interval { start: string; end: string; }
@@ -100,8 +100,14 @@ export default function NonOverlappingTime({ muhurta, pageDate }: Props) {
             </div>
           );
         }
+        const pageEndMs = getPageDayEndMs(pageDate);
         const src: Interval[] = Array.isArray(raw) ? raw : [raw];
-        const clean: Interval[] = src.flatMap(iv => subtractAll(iv, badIntervals));
+        const clean: Interval[] = src.flatMap(iv => subtractAll(iv, badIntervals))
+          .filter(iv => new Date(iv.start).getTime() < pageEndMs)
+          .map(iv => {
+            const endMs = new Date(iv.end).getTime();
+            return endMs > pageEndMs ? { ...iv, end: new Date(pageEndMs - 60_000).toISOString() } : iv;
+          });
         const info = MUHURTA_INFO[key];
 
         // Find which inauspicious periods cut into this muhurta's original window

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import ExpandSection from '@/components/ui/ExpandSection';
 import DateTag from '@/components/ui/DateTag';
-import { formatTime } from '@/lib/formatTime';
+import { formatTime, getPageDayEndMs } from '@/lib/formatTime';
 import { TITHIS, YOGAS, NAKSHATRAS, KARANAS, VARAS, PAKSHAS } from '@/lib/data/descriptions';
 import { computeRankedSlots } from '@/lib/rankedSlots';
 
@@ -46,10 +46,11 @@ function rankClass(i: number) {
 interface Props { muhurta: Record<string, any>; panchangData: any; pageDate: string; }
 
 export default function RankingTime({ muhurta, panchangData, pageDate }: Props) {
+  const pageEndMs = getPageDayEndMs(pageDate);
   const nextSunriseMs = panchangData.sunMoonTimes?.nextSunrise
     ? new Date(panchangData.sunMoonTimes.nextSunrise).getTime()
     : undefined;
-  const ranked = computeRankedSlots(muhurta, nextSunriseMs);
+  const ranked = computeRankedSlots(muhurta, nextSunriseMs).filter(s => s.start < pageEndMs);
   const qualityBrief = buildQualityBrief(panchangData);
 
   // Single popup state: { kind: 'badge'|'stars', index: number }
@@ -117,7 +118,7 @@ export default function RankingTime({ muhurta, panchangData, pageDate }: Props) 
       ) : (
         ranked.map((slot, i) => {
           const startIso = new Date(slot.start).toISOString();
-          const endIso   = new Date(slot.end).toISOString();
+          const endIso   = new Date(Math.min(slot.end, pageEndMs - 60_000)).toISOString();
           const stars = '✦'.repeat(Math.min(slot.score, 5));
           return (
             <div key={i} className="time-chip" style={{ alignItems: 'center', gap: '0.6rem' }}>
