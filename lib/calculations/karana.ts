@@ -2,7 +2,7 @@ import type { KaranaResult } from '@/types/panchang';
 
 // 11 Karanas: 4 fixed + 7 repeating
 const FIXED_KARANAS = ['Kimstughna', 'Shakuni', 'Chatushpada', 'Naga'];
-const REPEATING_KARANAS = ['Bava', 'Balava', 'Kaulava', 'Taitula', 'Garaja', 'Vanija', 'Vishti'];
+const REPEATING_KARANAS = ['Bava', 'Balava', 'Kaulava', 'Taitila', 'Gara', 'Vanija', 'Vishti'];
 
 // Uses tropical longitudes — ayanamsha cancels in elongation
 export function calculateKarana(sunLng: number, moonLng: number): KaranaResult {

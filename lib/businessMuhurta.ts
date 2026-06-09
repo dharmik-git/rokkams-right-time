@@ -66,7 +66,7 @@ const VARA_SCORES = [60, 80, 20, 100, 100, 100, 40];
 const VARA_NAMES = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 const YOGA_SCORES: Record<string, number> = {
-  Vishkambha: 80, Priti: 100, Ayushman: 100, Saubhagya: 100, Shobhana: 100,
+  Vishkambha: 20, Priti: 100, Ayushman: 100, Saubhagya: 100, Shobhana: 100,
   Atiganda: 20, Sukarman: 100, Dhriti: 100, Shula: 20, Ganda: 20,
   Vriddhi: 100, Dhruva: 100, Vyaghata: 20, Harshana: 80, Vajra: 40,
   Siddhi: 100, Vyatipata: 20, Variyan: 60, Parigha: 20, Shiva: 100,
@@ -75,8 +75,8 @@ const YOGA_SCORES: Record<string, number> = {
 };
 
 const KARANA_SCORES: Record<string, number> = {
-  Bava: 100, Balava: 100, Kaulava: 100, Taitula: 100, Vanija: 100,
-  Garaja: 80, Kimstughna: 60, Shakuni: 40,
+  Bava: 100, Balava: 100, Kaulava: 100, Taitila: 100, Vanija: 100,
+  Gara: 80, Kimstughna: 60, Shakuni: 40,
   Vishti: 20, Chatushpada: 20, Naga: 20,
 };
 

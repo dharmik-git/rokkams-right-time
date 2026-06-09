@@ -10,7 +10,7 @@ const YOGA_NAMES = [
 ];
 
 // Auspicious yogas (generally favorable)
-const AUSPICIOUS_YOGA_INDICES = new Set([1,2,3,4,7,10,11,13,15,19,20,21,22,23,24,25]);
+const AUSPICIOUS_YOGA_INDICES = new Set([1,2,3,4,6,7,10,11,13,15,17,19,20,21,22,23,24,25]);
 
 const YOGA_ARC = 360 / 27;
 
