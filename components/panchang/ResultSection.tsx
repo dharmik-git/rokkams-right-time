@@ -188,6 +188,7 @@ export default function ResultSection({ muhurta, transitions, vara, paksha, page
   const dayEndMs = nextSunriseMs !== undefined ? Math.min(nextSunriseMs, pageEndMs) : pageEndMs;
   const currentSlots = computeBusinessSlots(transitions, muhurta, vara.index, paksha, dayEndMs);
   const slots = mergeAdjacent([...(earlyMorningSlots ?? []), ...currentSlots])
+    .filter(s => s.start < pageEndMs)
     .sort((a, b) => b.finalScore - a.finalScore || a.start - b.start);
 
   const [popup, setPopup] = useState<{ index: number; pos: { top: number; left: number } } | null>(null);

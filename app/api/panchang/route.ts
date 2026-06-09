@@ -176,7 +176,7 @@ export async function POST(req: NextRequest) {
       data.paksha as 'Shukla' | 'Krishna',
       sunriseMs,
     );
-    const earlyMorningSlots = rawEarlySlots.filter(s => s.start >= midnightMs);
+    const earlyMorningSlots = rawEarlySlots.filter(s => s.start >= midnightMs && s.start < sunriseMs);
     const earlyMorningMuhurta = extractOverflowMuhurta(prevMuhurtaSer, midnightMs, sunriseMs);
 
     const result = { ...data, muhurta, transitions };
