@@ -60,7 +60,7 @@ export function computeRankedSlots(muhurta: Record<string, any>, dayEndMs?: numb
 
   for (let i = 0; i < sorted.length - 1; i++) {
     const s = sorted[i], e = sorted[i + 1];
-    if (dayEndMs !== undefined && s >= dayEndMs) continue;
+    if (dayEndMs !== undefined && s > dayEndMs) continue;
     if (e - s < 60000) continue;
     const mid = (s + e) / 2;
     const isBad = allBad.some(iv =>
