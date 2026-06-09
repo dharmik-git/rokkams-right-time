@@ -18,6 +18,7 @@ interface Props {
   paksha: 'Shukla' | 'Krishna';
   pageDate: string;
   nextSunrise?: string;
+  earlyMorningSlots?: BusinessSlot[];
 }
 
 // ── Star SVG components ───────────────────────────────────────────────────────
@@ -158,11 +159,13 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function ResultSection({ muhurta, transitions, vara, paksha, pageDate, nextSunrise }: Props) {
+export default function ResultSection({ muhurta, transitions, vara, paksha, pageDate, nextSunrise, earlyMorningSlots }: Props) {
   const pageEndMs = getPageDayEndMs(pageDate);
   const nextSunriseMs = nextSunrise ? new Date(nextSunrise).getTime() : undefined;
   const dayEndMs = nextSunriseMs !== undefined ? Math.min(nextSunriseMs, pageEndMs) : pageEndMs;
-  const slots = computeBusinessSlots(transitions, muhurta, vara.index, paksha, dayEndMs);
+  const currentSlots = computeBusinessSlots(transitions, muhurta, vara.index, paksha, dayEndMs);
+  const slots = [...(earlyMorningSlots ?? []), ...currentSlots]
+    .sort((a, b) => b.finalScore - a.finalScore || a.start - b.start);
 
   const [popup, setPopup] = useState<{ index: number; pos: { top: number; left: number } } | null>(null);
   const [mounted, setMounted] = useState(false);

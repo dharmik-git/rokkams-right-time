@@ -91,6 +91,7 @@ export default function Home() {
                 paksha={data.paksha}
                 pageDate={dateStr}
                 nextSunrise={data.sunMoonTimes.nextSunrise}
+                earlyMorningSlots={data.earlyMorningSlots ?? []}
               />
 
             {/* Footer */}

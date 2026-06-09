@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { computePanchang } from '@/lib/calculations/panchang';
 import { calculateMuhurta } from '@/lib/calculations/muhurta';
 import { computeTransitions } from '@/lib/calculations/transitions';
-import { computeAmritKalam, computeVidalYoga, computeVarjyam } from '@/lib/calculations/nakshatraMuhurta';
+import { computeAmritKalam, computeVidalYoga, computeVarjyam, computeBaana, computeBhadra } from '@/lib/calculations/nakshatraMuhurta';
 import { fetchDrikBaanaAndBhadra } from '@/lib/drikpanchang';
+import { computeBusinessSlots } from '@/lib/businessMuhurta';
 import { MUSCAT } from '@/lib/muscat';
 
 function getUTCOffsetMinutes(date: Date, timezone: string): number {
@@ -123,9 +124,42 @@ export async function POST(req: NextRequest) {
     const nextMidnightUTC = new Date(midnightUTC.getTime() + 86400000);
     const transitions = computeTransitions(midnightUTC, nextMidnightUTC);
 
+    // Compute prev-day full muhurta for early-morning overflow slots (midnight → sunrise)
+    const prevSunriseDate = prevData.sunMoonTimes.sunrise!;
+    const prevPrevDate    = new Date(date.getTime() - 2 * 86400000);
+    const prevPrevData    = computePanchang(prevPrevDate, MUSCAT);
+    const prevMuhurta     = calculateMuhurta(
+      prevSunriseDate,
+      prevData.sunMoonTimes.sunset!,
+      prevData.sunMoonTimes.solarNoon!,
+      yesterday.getDay(),
+      prevPrevData.sunMoonTimes.sunset ?? undefined,
+    );
+    prevMuhurta.amritKalam = computeAmritKalam(prevSunriseDate, sunrise!);
+    prevMuhurta.vidalYoga  = computeVidalYoga(prevSunriseDate, sunrise!);
+    prevMuhurta.varjyam    = computeVarjyam(prevSunriseDate, sunrise!);
+    prevMuhurta.baana      = computeBaana(prevSunriseDate, sunrise!);
+    prevMuhurta.bhadra     = computeBhadra(prevSunriseDate, sunrise!);
+
+    const sunriseMs  = sunrise ? sunrise.getTime() : midnightUTC.getTime();
+    const midnightMs = midnightUTC.getTime();
+
+    const rawEarlySlots = computeBusinessSlots(
+      transitions as any,
+      serializeMuhurta(prevMuhurta) as any,
+      prevData.vara.index,
+      prevData.paksha as 'Shukla' | 'Krishna',
+      sunriseMs,
+    );
+    const earlyMorningSlots = rawEarlySlots.filter(s => s.start >= midnightMs);
+
     const result = { ...data, muhurta, transitions };
     const serialized = serializePanchang(result);
-    const response = { ...serialized, sunMoonTimes: { ...serialized.sunMoonTimes, nextSunrise: roundMin(nextSunrise) } };
+    const response = {
+      ...serialized,
+      sunMoonTimes: { ...serialized.sunMoonTimes, nextSunrise: roundMin(nextSunrise) },
+      earlyMorningSlots,
+    };
     return NextResponse.json(response);
   } catch (err) {
     console.error('Panchang API error:', err);
