@@ -80,9 +80,9 @@ export default function Home() {
           <div key={dateStr} style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }} className="animate-in">
 
             <BasicInfo data={data} pageDate={dateStr} />
-            <AuspiciousTime muhurta={data.muhurta} pageDate={dateStr} />
-            <InauspiciousTime muhurta={data.muhurta} pageDate={dateStr} />
-            <NonOverlappingTime muhurta={data.muhurta} pageDate={dateStr} />
+            <AuspiciousTime muhurta={data.muhurta} pageDate={dateStr} earlyMorningMuhurta={data.earlyMorningMuhurta} />
+            <InauspiciousTime muhurta={data.muhurta} pageDate={dateStr} earlyMorningMuhurta={data.earlyMorningMuhurta} />
+            <NonOverlappingTime muhurta={data.muhurta} pageDate={dateStr} earlyMorningMuhurta={data.earlyMorningMuhurta} />
             <RankingTime muhurta={data.muhurta} panchangData={data} pageDate={dateStr} />
             <ResultSection
                 muhurta={data.muhurta}

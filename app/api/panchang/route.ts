@@ -59,6 +59,29 @@ function serializeMuhurta(m: ReturnType<typeof computePanchang>['muhurta']) {
   };
 }
 
+function extractOverflowMuhurta(
+  m: ReturnType<typeof serializeMuhurta>,
+  midnightMs: number,
+  sunriseMs: number,
+): Record<string, any> {
+  const result: Record<string, any> = {};
+  for (const [key, raw] of Object.entries(m)) {
+    if (raw === null) continue;
+    const arr: any[] = Array.isArray(raw) ? raw : [raw];
+    const overflow = arr
+      .filter(iv => iv?.start && iv?.end && new Date(iv.end).getTime() > midnightMs)
+      .map(iv => {
+        const s = new Date(iv.start).getTime();
+        const e = new Date(iv.end).getTime();
+        return { ...iv, start: new Date(Math.max(s, midnightMs)).toISOString(), end: new Date(Math.min(e, sunriseMs)).toISOString() };
+      })
+      .filter(iv => new Date(iv.end).getTime() > new Date(iv.start).getTime());
+    if (overflow.length > 0)
+      result[key] = Array.isArray(raw) ? overflow : overflow[0];
+  }
+  return result;
+}
+
 function serializePanchang(data: ReturnType<typeof computePanchang>) {
   return {
     ...data,
@@ -144,14 +167,17 @@ export async function POST(req: NextRequest) {
     const sunriseMs  = sunrise ? sunrise.getTime() : midnightUTC.getTime();
     const midnightMs = midnightUTC.getTime();
 
+    const prevMuhurtaSer = serializeMuhurta(prevMuhurta);
+
     const rawEarlySlots = computeBusinessSlots(
       transitions as any,
-      serializeMuhurta(prevMuhurta) as any,
+      prevMuhurtaSer as any,
       prevData.vara.index,
       prevData.paksha as 'Shukla' | 'Krishna',
       sunriseMs,
     );
     const earlyMorningSlots = rawEarlySlots.filter(s => s.start >= midnightMs);
+    const earlyMorningMuhurta = extractOverflowMuhurta(prevMuhurtaSer, midnightMs, sunriseMs);
 
     const result = { ...data, muhurta, transitions };
     const serialized = serializePanchang(result);
@@ -159,6 +185,7 @@ export async function POST(req: NextRequest) {
       ...serialized,
       sunMoonTimes: { ...serialized.sunMoonTimes, nextSunrise: roundMin(nextSunrise) },
       earlyMorningSlots,
+      earlyMorningMuhurta,
     };
     return NextResponse.json(response);
   } catch (err) {

@@ -75,22 +75,43 @@ function findOverlaps(src: Interval, muhurta: Record<string, any>): Array<{ labe
   return overlaps;
 }
 
-interface Props { muhurta: Record<string, any>; pageDate: string; }
+interface Props { muhurta: Record<string, any>; pageDate: string; earlyMorningMuhurta?: Record<string, any>; }
 
-export default function NonOverlappingTime({ muhurta, pageDate }: Props) {
-  // Collect all inauspicious intervals (flat list for subtraction)
+export default function NonOverlappingTime({ muhurta, pageDate, earlyMorningMuhurta }: Props) {
+  const pageEndMs = getPageDayEndMs(pageDate);
+
+  // Collect all inauspicious intervals (flat list for subtraction),
+  // including early-morning overflow from the previous panchang day
   const badIntervals: Interval[] = [];
   for (const { key } of INAUSPICIOUS_ORDER) {
+    const earlyRaw = earlyMorningMuhurta?.[key];
+    if (earlyRaw) {
+      const earlyArr: Interval[] = Array.isArray(earlyRaw) ? earlyRaw : [earlyRaw];
+      badIntervals.push(...earlyArr);
+    }
     const raw = muhurta[key];
-    const arr: Interval[] = Array.isArray(raw) ? raw : [raw];
-    badIntervals.push(...arr);
+    if (raw !== null) {
+      const arr: Interval[] = Array.isArray(raw) ? raw : [raw];
+      badIntervals.push(...arr.filter((iv: Interval) => new Date(iv.start).getTime() < pageEndMs));
+    }
   }
 
   return (
     <ExpandSection title="Non-Overlapped Auspicious Times" accentColor="var(--auspicious-text)">
       {AUSPICIOUS_ORDER.map(({ key, label }) => {
         const raw = muhurta[key];
-        if (raw === null || (Array.isArray(raw) && raw.length === 0)) {
+        const earlyAuspRaw = earlyMorningMuhurta?.[key];
+        const earlyAuspArr: Interval[] = earlyAuspRaw ? (Array.isArray(earlyAuspRaw) ? earlyAuspRaw : [earlyAuspRaw]) : [];
+        const currentArr: Interval[] = (raw === null || (Array.isArray(raw) && raw.length === 0))
+          ? []
+          : (Array.isArray(raw) ? raw : [raw])
+              .filter((iv: Interval) => new Date(iv.start).getTime() < pageEndMs)
+              .map((iv: Interval) => {
+                const endMs = new Date(iv.end).getTime();
+                return endMs > pageEndMs ? { ...iv, end: new Date(pageEndMs - 60_000).toISOString() } : iv;
+              });
+        const src: Interval[] = [...earlyAuspArr, ...currentArr];
+        if (src.length === 0) {
           const info = MUHURTA_INFO[key];
           return (
             <div key={key} className="time-chip" style={{ alignItems: 'center', gap: '0.4rem', flexWrap: 'nowrap' }}>
@@ -100,14 +121,7 @@ export default function NonOverlappingTime({ muhurta, pageDate }: Props) {
             </div>
           );
         }
-        const pageEndMs = getPageDayEndMs(pageDate);
-        const src: Interval[] = Array.isArray(raw) ? raw : [raw];
-        const clean: Interval[] = src.flatMap(iv => subtractAll(iv, badIntervals))
-          .filter(iv => new Date(iv.start).getTime() < pageEndMs)
-          .map(iv => {
-            const endMs = new Date(iv.end).getTime();
-            return endMs > pageEndMs ? { ...iv, end: new Date(pageEndMs - 60_000).toISOString() } : iv;
-          });
+        const clean: Interval[] = src.flatMap(iv => subtractAll(iv, badIntervals));
         const info = MUHURTA_INFO[key];
 
         // Find which inauspicious periods cut into this muhurta's original window
