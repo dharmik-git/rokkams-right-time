@@ -172,8 +172,8 @@ export async function POST(req: NextRequest) {
     const rawEarlySlots = computeBusinessSlots(
       transitions as any,
       prevMuhurtaSer as any,
-      prevData.vara.index,
-      prevData.paksha as 'Shukla' | 'Krishna',
+      data.vara.index,
+      data.paksha as 'Shukla' | 'Krishna',
       sunriseMs,
     );
     const earlyMorningSlots = rawEarlySlots.filter(s => s.start >= midnightMs);
