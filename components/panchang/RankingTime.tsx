@@ -46,7 +46,10 @@ function rankClass(i: number) {
 interface Props { muhurta: Record<string, any>; panchangData: any; pageDate: string; }
 
 export default function RankingTime({ muhurta, panchangData, pageDate }: Props) {
-  const ranked = computeRankedSlots(muhurta);
+  const nextSunriseMs = panchangData.sunMoonTimes?.nextSunrise
+    ? new Date(panchangData.sunMoonTimes.nextSunrise).getTime()
+    : undefined;
+  const ranked = computeRankedSlots(muhurta, nextSunriseMs);
   const qualityBrief = buildQualityBrief(panchangData);
 
   // Single popup state: { kind: 'badge'|'stars', index: number }

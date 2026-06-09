@@ -90,6 +90,7 @@ export default function Home() {
                 vara={data.vara}
                 paksha={data.paksha}
                 pageDate={dateStr}
+                nextSunrise={data.sunMoonTimes.nextSunrise}
               />
 
             {/* Footer */}

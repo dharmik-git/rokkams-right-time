@@ -27,7 +27,7 @@ export interface RankedSlot {
   labels: string[];
 }
 
-export function computeRankedSlots(muhurta: Record<string, any>): RankedSlot[] {
+export function computeRankedSlots(muhurta: Record<string, any>, dayEndMs?: number): RankedSlot[] {
   const boundaries = new Set<number>();
   const allAus: { iv: Interval; label: string }[] = [];
   const allBad: Interval[] = [];
@@ -60,6 +60,7 @@ export function computeRankedSlots(muhurta: Record<string, any>): RankedSlot[] {
 
   for (let i = 0; i < sorted.length - 1; i++) {
     const s = sorted[i], e = sorted[i + 1];
+    if (dayEndMs !== undefined && s >= dayEndMs) continue;
     if (e - s < 60000) continue;
     const mid = (s + e) / 2;
     const isBad = allBad.some(iv =>

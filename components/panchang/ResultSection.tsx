@@ -17,6 +17,7 @@ interface Props {
   vara: { index: number; name: string; shortName: string };
   paksha: 'Shukla' | 'Krishna';
   pageDate: string;
+  nextSunrise?: string;
 }
 
 // ── Star SVG components ───────────────────────────────────────────────────────
@@ -157,8 +158,9 @@ function PopupContent({ slot, rank }: { slot: BusinessSlot; rank: number }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function ResultSection({ muhurta, transitions, vara, paksha, pageDate }: Props) {
-  const slots = computeBusinessSlots(transitions, muhurta, vara.index, paksha);
+export default function ResultSection({ muhurta, transitions, vara, paksha, pageDate, nextSunrise }: Props) {
+  const dayEndMs = nextSunrise ? new Date(nextSunrise).getTime() : undefined;
+  const slots = computeBusinessSlots(transitions, muhurta, vara.index, paksha, dayEndMs);
 
   const [popup, setPopup] = useState<{ index: number; pos: { top: number; left: number } } | null>(null);
   const [mounted, setMounted] = useState(false);

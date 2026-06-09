@@ -124,7 +124,9 @@ export async function POST(req: NextRequest) {
     const transitions = computeTransitions(midnightUTC, nextMidnightUTC);
 
     const result = { ...data, muhurta, transitions };
-    return NextResponse.json(serializePanchang(result));
+    const serialized = serializePanchang(result);
+    const response = { ...serialized, sunMoonTimes: { ...serialized.sunMoonTimes, nextSunrise: roundMin(nextSunrise) } };
+    return NextResponse.json(response);
   } catch (err) {
     console.error('Panchang API error:', err);
     return NextResponse.json({ error: 'Calculation failed' }, { status: 500 });

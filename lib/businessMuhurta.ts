@@ -169,6 +169,7 @@ export function computeBusinessSlots(
   muhurta: Record<string, any>,
   varaIndex: number,
   paksha: 'Shukla' | 'Krishna',
+  dayEndMs?: number,
 ): BusinessSlot[] {
   const varaScoreVal = VARA_SCORES[varaIndex] ?? 60;
   const varaName = VARA_NAMES[varaIndex] ?? 'Unknown';
@@ -198,6 +199,7 @@ export function computeBusinessSlots(
 
   for (let i = 0; i < sorted.length - 1; i++) {
     const s = sorted[i], e = sorted[i + 1];
+    if (dayEndMs !== undefined && s >= dayEndMs) continue;
     if (e - s < 60000) continue;
 
     const mid = (s + e) / 2;
