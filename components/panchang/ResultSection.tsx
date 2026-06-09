@@ -165,8 +165,16 @@ function mergeAdjacent(slots: BusinessSlot[]): BusinessSlot[] {
   for (const slot of sorted) {
     const prev = out[out.length - 1];
     if (prev && Math.abs(prev.end - slot.start) <= 60_000) {
-      const keeper = slot.finalScore >= prev.finalScore ? slot : prev;
-      out[out.length - 1] = { ...keeper, start: prev.start, end: slot.end };
+      // Always use the later (current-day) slot's metadata so display fields
+      // like varaName reflect the calendar day being viewed, not the prev day.
+      // Take the best score of the two windows.
+      const finalScore = Math.max(prev.finalScore, slot.finalScore);
+      out[out.length - 1] = {
+        ...slot,
+        start: prev.start,
+        finalScore,
+        starCount: Math.max(prev.starCount, slot.starCount),
+      };
     } else {
       out.push({ ...slot });
     }
