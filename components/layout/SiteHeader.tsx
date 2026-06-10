@@ -84,19 +84,6 @@ export default function SiteHeader({ dateStr, onDateChange, numRoot }: Props) {
           gap: '0.4rem',
           flexWrap: 'nowrap', overflow: 'hidden',
         }}>
-          {/* Stacked SELECT / DATE label */}
-          <div style={{
-            fontFamily: 'Cinzel, serif',
-            fontSize: 'clamp(0.48rem, 1.4vw, 0.58rem)',
-            color: 'var(--moonsilver-dim)', letterSpacing: '0.12em',
-            textTransform: 'uppercase', opacity: 0.55,
-            display: 'flex', flexDirection: 'column', lineHeight: 1.25,
-            flexShrink: 0,
-          }}>
-            <span>Select</span>
-            <span>Date</span>
-          </div>
-
           {/* Date navigator */}
           <div style={{ flex: '1 1 auto', minWidth: 0 }}>
             <DateNavigator dateStr={dateStr} onChange={onDateChange} />

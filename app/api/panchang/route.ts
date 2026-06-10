@@ -39,23 +39,23 @@ function serializeInterval(iv: { start: Date; end: Date; label?: string }) {
 
 function serializeMuhurta(m: ReturnType<typeof computePanchang>['muhurta']) {
   return {
-    rahuKalam:       serializeInterval(m.rahuKalam),
-    gulikaKalam:     serializeInterval(m.gulikaKalam),
-    yamaGanda:       serializeInterval(m.yamaGanda),
-    abhijitMuhurta:  m.abhijitMuhurta ? serializeInterval(m.abhijitMuhurta) : null,
-    brahmaMuhurta:   serializeInterval(m.brahmaMuhurta),
-    godhuliMuhurta:  serializeInterval(m.godhuliMuhurta),
-    vijayaMuhurta:   serializeInterval(m.vijayaMuhurta),
-    pratahSandhya:   serializeInterval(m.pratahSandhya),
+    rahuKalam: serializeInterval(m.rahuKalam),
+    gulikaKalam: serializeInterval(m.gulikaKalam),
+    yamaGanda: serializeInterval(m.yamaGanda),
+    abhijitMuhurta: m.abhijitMuhurta ? serializeInterval(m.abhijitMuhurta) : null,
+    brahmaMuhurta: serializeInterval(m.brahmaMuhurta),
+    godhuliMuhurta: serializeInterval(m.godhuliMuhurta),
+    vijayaMuhurta: serializeInterval(m.vijayaMuhurta),
+    pratahSandhya: serializeInterval(m.pratahSandhya),
     sayahanaSandhya: serializeInterval(m.sayahanaSandhya),
-    nishitaMuhurta:  serializeInterval(m.nishitaMuhurta),
+    nishitaMuhurta: serializeInterval(m.nishitaMuhurta),
     madhyahnaSandhya: serializeInterval(m.madhyahnaSandhya),
-    amritKalam:      m.amritKalam.map(serializeInterval),
-    durMuhurta:      m.durMuhurta.map(serializeInterval),
-    varjyam:         m.varjyam.map(serializeInterval),
-    baana:           m.baana.map(serializeInterval),
-    vidalYoga:       m.vidalYoga.map(serializeInterval),
-    bhadra:          m.bhadra.map(serializeInterval),
+    amritKalam: m.amritKalam.map(serializeInterval),
+    durMuhurta: m.durMuhurta.map(serializeInterval),
+    varjyam: m.varjyam.map(serializeInterval),
+    baana: m.baana.map(serializeInterval),
+    vidalYoga: m.vidalYoga.map(serializeInterval),
+    bhadra: m.bhadra.map(serializeInterval),
   };
 }
 
@@ -87,11 +87,11 @@ function serializePanchang(data: ReturnType<typeof computePanchang>) {
     ...data,
     date: data.date.toISOString(),
     sunMoonTimes: {
-      sunrise:   roundMin(data.sunMoonTimes.sunrise),
-      sunset:    roundMin(data.sunMoonTimes.sunset),
+      sunrise: roundMin(data.sunMoonTimes.sunrise),
+      sunset: roundMin(data.sunMoonTimes.sunset),
       solarNoon: roundMin(data.sunMoonTimes.solarNoon),
-      moonrise:  roundMin(data.sunMoonTimes.moonrise),
-      moonset:   roundMin(data.sunMoonTimes.moonset),
+      moonrise: roundMin(data.sunMoonTimes.moonrise),
+      moonset: roundMin(data.sunMoonTimes.moonset),
     },
     muhurta: serializeMuhurta(data.muhurta),
   };
@@ -133,14 +133,14 @@ export async function POST(req: NextRequest) {
     const nextData = computePanchang(tomorrow, MUSCAT);
     const nextSunrise = nextData.sunMoonTimes.sunrise;
     muhurta.amritKalam = computeAmritKalam(sunrise, nextSunrise);
-    muhurta.varjyam    = computeVarjyam(sunrise, nextSunrise);
+    muhurta.varjyam = computeVarjyam(sunrise, nextSunrise);
 
     // Baana, Bhadra and Vidaal Yoga fetched live from DrikPanchang (Muscat).
     // Vidaal Yoga depends on the weekday+nakshatra combination, so we take it
     // from DrikPanchang to match exactly (empty = not observed that day).
     const drik = await fetchDrikInauspicious(sunrise, nextSunrise);
-    muhurta.baana     = drik.baana;
-    muhurta.bhadra    = drik.bhadra;
+    muhurta.baana = drik.baana;
+    muhurta.bhadra = drik.bhadra;
     muhurta.vidalYoga = drik.vidalYoga;
 
     // Compute element transition times for the full Muscat calendar day (midnight → midnight)
@@ -151,9 +151,9 @@ export async function POST(req: NextRequest) {
 
     // Compute prev-day full muhurta for early-morning overflow slots (midnight → sunrise)
     const prevSunriseDate = prevData.sunMoonTimes.sunrise!;
-    const prevPrevDate    = new Date(date.getTime() - 2 * 86400000);
-    const prevPrevData    = computePanchang(prevPrevDate, MUSCAT);
-    const prevMuhurta     = calculateMuhurta(
+    const prevPrevDate = new Date(date.getTime() - 2 * 86400000);
+    const prevPrevData = computePanchang(prevPrevDate, MUSCAT);
+    const prevMuhurta = calculateMuhurta(
       prevSunriseDate,
       prevData.sunMoonTimes.sunset!,
       prevData.sunMoonTimes.solarNoon!,
@@ -161,12 +161,12 @@ export async function POST(req: NextRequest) {
       prevPrevData.sunMoonTimes.sunset ?? undefined,
     );
     prevMuhurta.amritKalam = computeAmritKalam(prevSunriseDate, sunrise!);
-    prevMuhurta.vidalYoga  = computeVidalYoga(prevSunriseDate, sunrise!);
-    prevMuhurta.varjyam    = computeVarjyam(prevSunriseDate, sunrise!);
-    prevMuhurta.baana      = computeBaana(prevSunriseDate, sunrise!);
-    prevMuhurta.bhadra     = computeBhadra(prevSunriseDate, sunrise!);
+    prevMuhurta.vidalYoga = computeVidalYoga(prevSunriseDate, sunrise!);
+    prevMuhurta.varjyam = computeVarjyam(prevSunriseDate, sunrise!);
+    prevMuhurta.baana = computeBaana(prevSunriseDate, sunrise!);
+    prevMuhurta.bhadra = computeBhadra(prevSunriseDate, sunrise!);
 
-    const sunriseMs  = sunrise ? sunrise.getTime() : midnightUTC.getTime();
+    const sunriseMs = sunrise ? sunrise.getTime() : midnightUTC.getTime();
     const midnightMs = midnightUTC.getTime();
 
     const prevMuhurtaSer = serializeMuhurta(prevMuhurta);

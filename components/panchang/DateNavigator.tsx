@@ -170,10 +170,6 @@ export default function DateNavigator({ dateStr, onChange }: Props) {
         animation: 'popupIn 0.15s ease',
       }}
     >
-      <div style={{ fontFamily: 'Cinzel, serif', fontSize: '0.65rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--moonsilver-dim)', textAlign: 'center', marginBottom: '0.75rem' }}>
-        Select Date
-      </div>
-
       {/* Three drum-roll columns */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'flex-start' }}>
         <ScrollColumn
